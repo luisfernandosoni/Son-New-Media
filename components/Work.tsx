@@ -10,9 +10,9 @@
  * 7. Cloudflare 2026 Ecosystem.
  * 
  * SPRINT LOG:
- * Fixed the type mismatch in `WorkCard`. Replaced the invalid `useTransform` 
- * with a kinetic velocity-based specularity engine. The shine now reacts 
- * dynamically to mouse speed for a more tactile, premium feel.
+ * Updated "Project Aether" visual asset to a high-fidelity iridescent render.
+ * The choice of imagery aligns with the "Generative Product Campaign" 
+ * category, providing a sophisticated sci-fi aesthetic for the 2026 agency identity.
  */
 
 import React, { useRef } from 'react';
@@ -21,7 +21,14 @@ import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
 
 const works: WorkItem[] = [
-  { id: '1', title: 'Project Aether', category: 'Generative Product Campaign', year: '2025', image: 'https://images.unsplash.com/photo-1635323533469-808620868f0a?auto=format&fit=crop&q=80&w=1600', wide: true },
+  { 
+    id: '1', 
+    title: 'Project Aether', 
+    category: 'Generative Product Campaign', 
+    year: '2025', 
+    image: 'https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&q=80&w=1600', 
+    wide: true 
+  },
   { id: '2', title: 'Datastream V', category: 'Automated Interface Design', year: '2023', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800', wide: false },
   { id: '3', title: 'Kinetic Labs', category: 'AI Robotics Showcase', year: '2024', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800', wide: false },
 ];
@@ -52,7 +59,6 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   // Dynamic Shine (Specularity)
   const shineX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   
-  // Fix: Replaced invalid function-based useTransform with a proper MotionValue-driven one
   // We use a smoothed speed to avoid jitter in the specularity layer
   const smoothSpeed = useSpring(speed, { damping: 50, stiffness: 200 });
   const shineOpacity = useTransform(smoothSpeed, [0, 2000], [0, 0.3]);
@@ -87,7 +93,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
         style={{ rotateX, rotateY }}
         className="relative overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform"
       >
-        {/* Dynamic Specularity Layer: Opacity is now driven by kinetic velocity */}
+        {/* Dynamic Specularity Layer */}
         <motion.div 
           style={{ 
             background: `radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
@@ -122,7 +128,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
         </div>
       </motion.div>
 
-      {/* Floating Meta-Info (Outside 3D container for depth contrast) */}
+      {/* Floating Meta-Info */}
       <div className="mt-8 flex justify-between items-end px-2">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-text uppercase tracking-widest">{item.title}</h4>
