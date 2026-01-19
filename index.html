@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soni New Media</title>
+    
+    <!-- Google Fonts: Inter (UI) and Space Grotesk (Display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+
+    <!-- Tailwind CSS (CDN for demo purposes, would be PostCSS in prod) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              background: "#050505", // Deep, deep charcoal (almost OLED black)
+              surface: "#121212",
+              accent: "#FFFFFF",
+              subtle: "#333333",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            backgroundImage: {
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            }
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Global Reset & Custom Utilities */
+      body {
+        background-color: #050505; /* Fallback */
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Film Grain / Noise Overlay - The "Analog" feel */
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.04;
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        filter: contrast(170%) brightness(100%);
+      }
+
+      /* Hide scrollbar for cleaner look but keep functionality */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "framer-motion": "https://esm.sh/framer-motion@^12.27.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@rive-app/react-canvas": "https://esm.sh/@rive-app/react-canvas@4.26.1?external=react,react-dom,@rive-app/canvas",
+    "@rive-app/canvas": "https://esm.sh/@rive-app/canvas@2.26.1?bundle"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <div class="noise-overlay"></div>
+  </body>
+</html>
