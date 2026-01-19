@@ -114,9 +114,6 @@ const SentinelCore = () => {
 const Hero: React.FC = () => {
   const { t, language } = useLanguage();
   
-  // SHARED HEIGHT CONSTANT - Adjusted for 2026 aesthetics (Lower profile)
-  const sharedHeight = "580px";
-
   return (
     <section className="relative pt-24 pb-16 lg:pt-40 lg:pb-24 overflow-hidden px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 lg:items-stretch">
@@ -145,7 +142,6 @@ const Hero: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }} 
                 exit={{ opacity: 0, y: -20 }} 
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} 
-                /* Using fluid typography with clamp for perfect scaling */
                 className="font-display text-[clamp(2.5rem,7vw,4.5rem)] font-medium tracking-tighter leading-[0.95] text-text"
               >
                 {t('hero.title1')}<br />{t('hero.title2')}<br />

@@ -6,7 +6,6 @@ import { ServiceItem } from '../types.ts';
 
 const BreathableCard: React.FC<{ item: ServiceItem; index: number }> = ({ item, index }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { language } = useLanguage();
   const time = useTime();
 
   // 1. Normalized Motion Values
@@ -74,7 +73,7 @@ const BreathableCard: React.FC<{ item: ServiceItem; index: number }> = ({ item, 
         }}
         className="group relative w-full h-full p-10 rounded-[40px] bg-white/[0.04] border border-white/10 flex flex-col justify-between overflow-hidden backdrop-blur-2xl transition-colors duration-700 hover:border-white/30"
       >
-        {/* LIGHT LAYER 1: Broad Luminous Beam (Increased Presence) */}
+        {/* LIGHT LAYER 1: Broad Luminous Beam */}
         <motion.div 
           style={{ 
             background: useTransform(
@@ -86,7 +85,7 @@ const BreathableCard: React.FC<{ item: ServiceItem; index: number }> = ({ item, 
           className="absolute inset-0 z-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         />
 
-        {/* LIGHT LAYER 2: Sharp Specular Glint (The "WOW" effect) */}
+        {/* LIGHT LAYER 2: Sharp Specular Glint */}
         <motion.div 
           style={{ 
             background: useTransform(
