@@ -11,10 +11,24 @@ const stripFallbacks = () => {
   };
 };
 
+// Plugin 2: Inyecta el CSS nativo SOLO en el build (FIX PANTALLA NEGRA)
+const injectCss = () => {
+  return {
+    name: 'mcrd-inject-css',
+    transform(code: string, id: string) {
+      // Si el archivo es index.tsx, le pegamos el import del CSS al principio
+      if (id.endsWith('index.tsx')) {
+        return "import './index.css';\n" + code;
+      }
+    }
+  };
+};
+
 export default defineConfig({
   plugins: [
     react(),
-    stripFallbacks()
+    stripFallbacks(),
+    injectCss() // <--- El Agente de Inyección
   ],
   base: './',
   root: '.',
