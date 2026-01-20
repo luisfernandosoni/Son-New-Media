@@ -1,39 +1,71 @@
-
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
-import { useMotionValue, MotionValue, useVelocity, useTransform } from 'motion/react';
+import { useMotionValue, MotionValue, useVelocity, useTransform, useSpring } from 'motion/react';
+import { useMobileMagic } from '../hooks/useMobileMagic';
 
 interface KineticContextType {
   mouseX: MotionValue<number>;
   mouseY: MotionValue<number>;
   velX: MotionValue<number>;
   velY: MotionValue<number>;
+  isMobile: boolean;
 }
 
 const KineticContext = createContext<KineticContextType | undefined>(undefined);
 
 export const KineticProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  const velX = useVelocity(mouseX);
-  const velY = useVelocity(mouseY);
+  // 1. Magia Móvil (Hook externo)
+  const { isMobile, virtualX, virtualY, requestGyroAccess } = useMobileMagic();
+
+  // 2. Desktop Nativo (Inputs Crudos)
+  const desktopX = useMotionValue(0);
+  const desktopY = useMotionValue(0);
+
+  // 3. Suavizado SELECTIVO (Solo para el Giroscopio)
+  // El giroscopio es ruidoso, necesita este filtro para no temblar.
+  const gyroSpringConfig = { damping: 30, stiffness: 100, mass: 0.5 };
+  const smoothVirtualX = useSpring(virtualX, gyroSpringConfig);
+  const smoothVirtualY = useSpring(virtualY, gyroSpringConfig);
+
+  // 4. EL BYPASS DE LATENCIA (La corrección #MCRD)
+  // Si es Desktop -> Pasamos desktopX directo (RAW). Cero Lag.
+  // Si es Móvil   -> Pasamos smoothVirtualX (Filtered). Experiencia Premium.
+  const finalX = isMobile ? smoothVirtualX : desktopX;
+  const finalY = isMobile ? smoothVirtualY : desktopY;
+
+  const velX = useVelocity(finalX);
+  const velY = useVelocity(finalY);
 
   useEffect(() => {
+    if (isMobile) {
+      // Lógica de desbloqueo de sensores para iOS
+      const unlockSensors = () => {
+        requestGyroAccess();
+        window.removeEventListener('click', unlockSensors);
+        window.removeEventListener('touchstart', unlockSensors);
+      };
+      window.addEventListener('click', unlockSensors);
+      window.addEventListener('touchstart', unlockSensors);
+      return;
+    }
+
+    // Lógica Desktop Standard (Event Loop Directo)
     const handlePointerMove = (e: PointerEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      // Set directo sin intermediarios = Latencia Cero
+      desktopX.set(e.clientX);
+      desktopY.set(e.clientY);
     };
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     return () => window.removeEventListener('pointermove', handlePointerMove);
-  }, [mouseX, mouseY]);
+  }, [isMobile, desktopX, desktopY, requestGyroAccess]);
 
   const value = useMemo(() => ({
-    mouseX,
-    mouseY,
+    mouseX: finalX,
+    mouseY: finalY,
     velX,
-    velY
-  }), [mouseX, mouseY, velX, velY]);
+    velY,
+    isMobile
+  }), [finalX, finalY, velX, velY, isMobile]);
 
   return (
     <KineticContext.Provider value={value}>
@@ -48,6 +80,7 @@ export const useKinetic = () => {
   return context;
 };
 
+// Hook de ayuda para movimiento relativo (Sin cambios)
 export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
   const { mouseX, mouseY } = useKinetic();
 
@@ -65,7 +98,6 @@ export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
     return Math.max(0, Math.min(1, val));
   });
 
-  // FIX: Explicitly cast return to number to ensure MotionValue<number> type compatibility
   const isOver = useTransform([mouseX, mouseY], ([x, y]: number[]) => {
     if (!ref.current) return 0;
     const rect = ref.current.getBoundingClientRect();
