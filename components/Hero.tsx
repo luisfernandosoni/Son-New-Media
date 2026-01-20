@@ -62,8 +62,9 @@ const SentinelCore = () => {
     return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
   });
 
-  const speed = useTransform<number[], number>([velX, velY], ([vx, vy]) => 
-    Math.min(Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2)) / 15, 1)
+  // FIX: Removed generics, using any[] for callback args to bypass strict tuple matching
+  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
+    Math.min(Math.sqrt(Math.pow(Number(vx || 0), 2) + Math.pow(Number(vy || 0), 2)) / 15, 1)
   );
 
   const springX = useSpring(relX, { stiffness: 45, damping: 35 });

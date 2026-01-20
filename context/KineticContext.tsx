@@ -65,8 +65,8 @@ export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
     return Math.max(0, Math.min(1, val));
   });
 
-  // Explicitly typed as number to satisfy TS arrays
-  const isOver = useTransform<number[], number>([mouseX, mouseY], ([x, y]) => {
+  // FIX: Removed generics, using any[] for callback args
+  const isOver = useTransform([mouseX, mouseY], ([x, y]: any[]) => {
     if (!ref.current) return 0;
     const rect = ref.current.getBoundingClientRect();
     const over = (
