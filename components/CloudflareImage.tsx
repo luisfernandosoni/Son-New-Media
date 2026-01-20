@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 const ASSET_DOMAIN = 'https://assets.soninewmedia.com';
 

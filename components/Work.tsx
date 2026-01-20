@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { motion, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
+import { motion, useSpring, useTransform, useMotionTemplate } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
 import { useRelativeMotion, useKinetic } from '../context/KineticContext.tsx';

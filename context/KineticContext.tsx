@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
-import { useMotionValue, MotionValue, useVelocity, useTransform } from 'framer-motion';
+import { useMotionValue, MotionValue, useVelocity, useTransform } from 'motion/react';
 
 interface KineticContextType {
   mouseX: MotionValue<number>;

@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring, useTransform } from 'motion/react';
 import { useKinetic } from '../context/KineticContext.tsx';
 
 interface MagneticProps {

@@ -1,7 +1,8 @@
+
 {
   "name": "soni-new-media-2026",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +12,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "framer-motion": "^12.0.0"
+    "motion": "^12.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

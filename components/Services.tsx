@@ -1,3 +1,4 @@
+
 /* 
  * RULES SUMMARY:
  * 1. Focus on one core task per sprint.
@@ -11,7 +12,7 @@
  */
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { ServiceItem } from '../types.ts';
 import { ServiceCard } from './ServiceCard.tsx';

@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
 import { Logo } from './Logo.tsx';

@@ -1,6 +1,6 @@
 
 import React, { useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useSpring, useTransform, useTime, MotionValue } from 'framer-motion';
+import { motion, AnimatePresence, useSpring, useTransform, useTime, MotionValue } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { useKinetic } from '../context/KineticContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
@@ -124,76 +124,107 @@ const SentinelCore = () => {
 };
 
 const Hero: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   
   return (
-    <section className="relative pt-24 pb-16 lg:pt-44 lg:pb-24 overflow-hidden px-6">
-      <AnamorphicStreak />
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 lg:items-stretch">
-        
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }} 
-          animate={{ opacity: 1, x: 0 }} 
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }} 
-          className="relative z-20 flex flex-col justify-between lg:h-[680px] py-4"
-        >
-          <div className="mb-8 lg:mb-0">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-5 px-5 py-2 rounded-full border border-accent/10 bg-accent/[0.04]">
-              <div className="relative w-2 h-2"><div className="absolute inset-0 bg-accent rounded-full animate-ping opacity-50" /><div className="relative w-full h-full bg-accent rounded-full" /></div>
-              <span className="text-label-fluid font-bold uppercase tracking-widest-3x text-accent/70">{t('hero.tag')}</span>
+    <section className="relative w-full min-h-screen flex items-center justify-center pt-24 overflow-hidden bg-background">
+       {/* Background Elements */}
+       <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <AnamorphicStreak />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-accent/[0.03] blur-[120px] rounded-full mix-blend-screen" />
+       </div>
+
+       <div className="max-w-7xl w-full mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+          
+          {/* Text Content */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-8 inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-accent/20 bg-accent/[0.05] backdrop-blur-sm"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <span className="text-nano font-bold uppercase tracking-widest-3x text-accent">
+                {t('hero.tag')}
+              </span>
+            </motion.div>
+            
+            <div className="relative mb-10">
+              <h1 className="font-display text-h1-fluid font-medium leading-[0.9] tracking-tight text-text mix-blend-difference">
+                <span className="block overflow-hidden">
+                  <motion.span 
+                    initial={{ y: "100%" }} 
+                    animate={{ y: "0%" }} 
+                    transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
+                  >
+                    {t('hero.title1')}
+                  </motion.span>
+                </span>
+                <span className="block overflow-hidden text-secondary/60">
+                   <motion.span 
+                    initial={{ y: "100%" }} 
+                    animate={{ y: "0%" }} 
+                    transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
+                  >
+                    {t('hero.title2')}
+                  </motion.span>
+                </span>
+                <span className="block overflow-hidden">
+                   <motion.span 
+                    initial={{ y: "100%" }} 
+                    animate={{ y: "0%" }} 
+                    transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
+                  >
+                    {t('hero.title3')}
+                  </motion.span>
+                </span>
+              </h1>
+            </div>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-h3-fluid text-secondary font-light max-w-xl leading-relaxed mb-12"
+            >
+              {t('hero.desc')}
+            </motion.p>
+
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+               className="flex flex-wrap items-center gap-6"
+            >
+              <Magnetic strength={0.3}>
+                <a href="#work" className="bg-accent text-accent-contrast px-8 py-4 rounded-full font-bold text-label-fluid uppercase tracking-widest-2x hover:shadow-[0_0_40px_rgba(var(--accent-rgb),0.4)] transition-all duration-500">
+                  {t('hero.btn')}
+                </a>
+              </Magnetic>
+
+              <Magnetic strength={0.2}>
+                <button className="px-8 py-4 rounded-full font-bold text-label-fluid uppercase tracking-widest-2x text-text border border-border hover:bg-text hover:text-background transition-all duration-500 flex items-center gap-3 group">
+                   <span className="material-icons-outlined text-lg group-hover:scale-110 transition-transform">play_circle</span>
+                   {t('hero.reel')}
+                </button>
+              </Magnetic>
             </motion.div>
           </div>
 
-          <div className="space-y-10">
-            <AnimatePresence mode="wait">
-              <motion.h1 
-                key={language} 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                exit={{ opacity: 0, y: -20 }} 
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} 
-                className="font-display text-h1-fluid font-medium text-text tracking-[-0.03em]"
-              >
-                {t('hero.title1')}<br />{t('hero.title2')}<br />
-                <span className="text-text/20 block mt-8 font-light italic text-[clamp(2rem,6vw,4.5rem)] tracking-normal">{t('hero.title3')}</span>
-              </motion.h1>
-            </AnimatePresence>
-            <p className="text-body-fluid text-secondary max-w-md font-light tracking-tight opacity-95">
-              {t('hero.desc')}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-10 pt-10 lg:pt-0 relative z-30">
-            <Magnetic strength={0.1} radius={200}>
-              <a href="#work" className="group relative inline-flex h-16 items-center justify-center overflow-hidden rounded-full bg-accent px-12 transition-all duration-500 hover:scale-105 active:scale-95">
-                <span className="relative z-10 flex items-center gap-4 text-label-fluid tracking-widest-2x font-bold text-accent-contrast">
-                  {t('hero.btn')}
-                  <span className="material-icons-outlined text-xl">north_east</span>
-                </span>
-                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.2} radius={100}>
-              <button className="group flex items-center gap-5 text-label-fluid font-bold uppercase tracking-widest-2x text-secondary hover:text-text transition-all">
-                <div className="flex items-center justify-center w-14 h-14 rounded-full border border-accent/15 group-hover:border-accent">
-                  <span className="material-icons-outlined text-2xl">play_arrow</span>
-                </div>
-                {t('hero.reel')}
-              </button>
-            </Magnetic>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }} 
-          animate={{ opacity: 1, scale: 1 }} 
-          transition={{ duration: 1.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }} 
-          className="relative h-[520px] w-full lg:h-[680px] flex items-center justify-center z-10"
-        >
-          <SentinelCore />
-        </motion.div>
-
-      </div>
+          {/* Visual Content - Sentinel Core */}
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.9, rotateX: 20 }}
+             animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+             transition={{ duration: 1.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+             className="lg:col-span-5 relative aspect-square"
+          >
+             <SentinelCore />
+          </motion.div>
+       </div>
     </section>
   );
 };

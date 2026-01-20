@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring, useTransform } from 'motion/react';
 import { useKinetic } from '../context/KineticContext.tsx';
 
 export const CustomCursor: React.FC = () => {
