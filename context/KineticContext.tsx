@@ -55,30 +55,31 @@ export const useKinetic = () => {
 export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
   const { mouseX, mouseY } = useKinetic();
 
-  const relX = useTransform(mouseX, (x) => {
+  const relX = useTransform(mouseX, (x: number) => {
     if (!ref.current) return 0.5;
     const rect = ref.current.getBoundingClientRect();
     const val = (x - rect.left) / rect.width;
     return Math.max(0, Math.min(1, val));
   });
 
-  const relY = useTransform(mouseY, (y) => {
+  const relY = useTransform(mouseY, (y: number) => {
     if (!ref.current) return 0.5;
     const rect = ref.current.getBoundingClientRect();
     const val = (y - rect.top) / rect.height;
     return Math.max(0, Math.min(1, val));
   });
 
-  // Determines if the mouse is actually over the element
-  const isOver = useTransform([mouseX, mouseY], ([x, y]) => {
-    if (!ref.current) return false;
+  // Returns 1 if mouse is over, 0 if not (Numeric for TS array consistency)
+  const isOver = useTransform([mouseX, mouseY], ([x, y]: any[]) => {
+    if (!ref.current) return 0;
     const rect = ref.current.getBoundingClientRect();
-    return (
+    const over = (
       (x as number) >= rect.left &&
       (x as number) <= rect.right &&
       (y as number) >= rect.top &&
       (y as number) <= rect.bottom
     );
+    return over ? 1 : 0;
   });
 
   return { relX, relY, isOver };

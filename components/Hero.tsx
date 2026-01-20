@@ -1,6 +1,6 @@
 
 import React, { useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useSpring, useTransform, useTime } from 'framer-motion';
+import { motion, AnimatePresence, useSpring, useTransform, useTime, MotionValue } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { useKinetic } from '../context/KineticContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
@@ -20,8 +20,8 @@ const AnamorphicStreak = () => {
 
 const SentinelRing: React.FC<{ 
   index: number; 
-  relX: motion.MotionValue<number>; 
-  relY: motion.MotionValue<number>; 
+  relX: MotionValue<number>; 
+  relY: MotionValue<number>; 
 }> = ({ index, relX, relY }) => {
   const zDepth = index * -30;
   const ringSpringX = useSpring(relX, { stiffness: 60 - index * 3, damping: 25 + index });
@@ -51,19 +51,18 @@ const SentinelCore = () => {
   const { mouseX, mouseY, velX, velY } = useKinetic();
   const time = useTime();
 
-  // Normalized relative coordinates for internal parallax
-  const relX = useTransform(mouseX, (x) => {
+  const relX = useTransform(mouseX, (x: number) => {
     if (!containerRef.current) return 0;
     const rect = containerRef.current.getBoundingClientRect();
     return (x - (rect.left + rect.width / 2)) / (rect.width / 2);
   });
-  const relY = useTransform(mouseY, (y) => {
+  const relY = useTransform(mouseY, (y: number) => {
     if (!containerRef.current) return 0;
     const rect = containerRef.current.getBoundingClientRect();
     return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
   });
 
-  const speed = useTransform([velX, velY], ([vx, vy]) => 
+  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
     Math.min(Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2)) / 15, 1)
   );
 
@@ -88,13 +87,13 @@ const SentinelCore = () => {
           />
         ))}
       </div>
-      <motion.div style={{ rotateX, rotateY, transformStyle: "preserve-3d" }} className="relative w-full h-full flex items-center justify-center">
+      <motion.div style={{ rotateX, rotateY, transformStyle: "preserve-3d" } as any} className="relative w-full h-full flex items-center justify-center">
         {rings.map((_, i) => (
           <SentinelRing key={i} index={i} relX={relX} relY={relY} />
         ))}
-        <motion.div style={{ translateZ: 100, scale: useTransform(speed, [0, 1], [1, 0.85]), transformStyle: "preserve-3d" }} className="relative z-50">
+        <motion.div style={{ translateZ: 100, scale: useTransform(speed, [0, 1], [1, 0.85]), transformStyle: "preserve-3d" } as any} className="relative z-50">
           <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-[0_0_60px_rgba(var(--accent-rgb),0.5)]">
-            <motion.div style={{ scale: useTransform(time, t => 0.4 + Math.sin(t / 600) * 0.12) }} className="w-3.5 h-3.5 rounded-full bg-background" />
+            <motion.div style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.12) }} className="w-3.5 h-3.5 rounded-full bg-background" />
           </div>
           <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.1, 0.2] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 -m-8 bg-accent/20 blur-2xl rounded-full -z-10" />
         </motion.div>

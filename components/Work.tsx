@@ -23,15 +23,14 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   const { velX, velY } = useKinetic();
   const { relX, relY, isOver } = useRelativeMotion(cardRef);
   
-  const speed = useTransform([velX, velY], ([vx, vy]) => 
+  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
     Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2))
   );
 
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
   
-  // Decoupled Hover State Logic - FIXED
-  const activeX = useTransform([isOver, relX], ([over, rX]) => (over ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]) => (over ? rY : 0.5));
+  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? rY : 0.5));
 
   const rotateX = useSpring(useTransform(activeY, [0, 1], [10, -10]), springConfig);
   const rotateY = useSpring(useTransform(activeX, [0, 1], [-10, 10]), springConfig);
@@ -55,14 +54,14 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
       className={`relative group cursor-pointer ${item.wide ? 'col-span-1 lg:col-span-2' : 'col-span-1'}`}
     >
       <motion.div
-        style={{ rotateX, rotateY }}
+        style={{ rotateX, rotateY } as any}
         className="relative overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform"
       >
         <motion.div 
           style={{ 
             background: useMotionTemplate`radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
             opacity: shineOpacity
-          }}
+          } as any}
           className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
         />
 
@@ -70,12 +69,12 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
           <motion.img
             src={item.image}
             alt={item.title}
-            style={{ x: imageX, y: imageY, scale: 1.2 }}
+            style={{ x: imageX, y: imageY, scale: 1.2 } as any}
             className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-out"
           />
           
           <motion.div 
-            style={{ opacity: useTransform(isOver, over => over ? 1 : 0) }}
+            style={{ opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0) } as any}
             className="absolute inset-0 z-10 p-10 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60 transition-opacity duration-700"
           >
             <div className="flex justify-between items-start">

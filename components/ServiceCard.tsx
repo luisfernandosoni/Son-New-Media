@@ -25,7 +25,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const time = useTime();
   const { relX, relY, isOver } = useRelativeMotion(containerRef);
 
-  // 1. Intelligence: High-Fidelity Physics Engine
   const springConfig = { 
     stiffness: 180, 
     damping: 35, 
@@ -33,18 +32,15 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     restDelta: 0.001 
   };
   
-  // Decoupled Hover State: Smoothly interpolate between active and neutral - FIXED
-  const activeX = useTransform([isOver, relX], ([over, rX]) => (over ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]) => (over ? rY : 0.5));
+  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? rY : 0.5));
 
   const smoothX = useSpring(activeX, springConfig);
   const smoothY = useSpring(activeY, springConfig);
 
-  // 2. Geometry: Sophisticated Rotation
   const rotateX = useTransform(smoothY, [0, 1], [10, -10]);
   const rotateY = useTransform(smoothX, [0, 1], [-10, 10]);
   
-  // 3. Multi-Planar Depth: Reactive Parallax
   const tier1X = useTransform(smoothX, [0, 1], [20, -20]);
   const tier1Y = useTransform(smoothY, [0, 1], [20, -20]);
   
@@ -54,11 +50,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const tier3X = useTransform(smoothX, [0, 1], [5, -5]);
   const tier3Y = useTransform(smoothY, [0, 1], [5, -5]);
 
-  // Subtle organic breathing
-  const idleBreathe = useTransform(time, t => 1 + Math.sin((t + index * 500) / 4000) * 0.003);
+  const idleBreathe = useTransform(time, (t: number) => 1 + Math.sin((t + index * 500) / 4000) * 0.003);
   const transform = useMotionTemplate`rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${idleBreathe})`;
 
-  // 4. Light: Specular Tracking
   const lightX = useTransform(smoothX, [0, 1], ["0%", "100%"]);
   const lightY = useTransform(smoothY, [0, 1], ["0%", "100%"]);
 
@@ -89,7 +83,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           transform,
           transformStyle: 'preserve-3d',
           willChange: 'transform'
-        }}
+        } as any}
         className={`relative w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col overflow-visible ${theme.container} ${theme.shadow} transition-shadow duration-700`}
       >
         <div 
@@ -97,30 +91,28 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           style={{ transform: 'translateZ(0px)' }}
         />
 
-        {/* SPECULAR LIGHTING */}
         <motion.div 
           style={{ 
             background: useTransform(
               [lightX, lightY], 
-              ([lx, ly]) => isCTA 
+              ([lx, ly]: any[]) => isCTA 
                 ? `radial-gradient(800px circle at ${lx} ${ly}, rgba(0,0,0,0.06), transparent 75%)`
                 : `radial-gradient(1000px circle at ${lx} ${ly}, rgba(255,255,255,0.18), transparent 60%)`
             ),
             transform: 'translateZ(10px)',
             mixBlendMode: isCTA ? 'multiply' : 'overlay',
-            opacity: useTransform(isOver, (over) => over ? 1 : 0)
-          }}
+            opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0)
+          } as any}
           className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 rounded-[48px]"
         />
 
-        {/* PARALLAX CONTENT STACK */}
         <motion.div 
           style={{ 
             x: tier1X, 
             y: tier1Y, 
             translateZ: 100,
             transformStyle: 'preserve-3d'
-          }}
+          } as any}
           className="flex justify-between items-start relative z-10 h-24 lg:h-32 mb-6 pointer-events-none"
         >
           {isCTA ? (
@@ -145,7 +137,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             y: tier2Y, 
             translateZ: 60,
             transformStyle: 'preserve-3d'
-          }}
+          } as any}
           className={`relative z-10 flex-grow flex flex-col pointer-events-none ${isCTA ? 'items-center text-center' : ''}`}
         >
           <div className="min-h-[2.5em] lg:min-h-[2.2em] mb-6 w-full">
@@ -154,7 +146,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             </h3>
           </div>
           
-          <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 30 }}>
+          <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 30 } as any}>
             <p className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light ${theme.subtext} ${isCTA ? 'px-4 opacity-80' : 'group-hover:text-white/90'}`}>
               {isCTA ? ctaDesc : item?.description}
             </p>
@@ -163,7 +155,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {isCTA && (
           <motion.div 
-            style={{ translateZ: 140, x: tier1X, y: tier1Y }}
+            style={{ translateZ: 140, x: tier1X, y: tier1Y } as any}
             className="relative z-10 pb-6 flex justify-center w-full"
           >
             <motion.div 
@@ -183,22 +175,21 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           </motion.div>
         )}
 
-        {/* KINETIC BORDER GLOW */}
         {!isCTA && (
           <motion.div 
             className="absolute inset-0 border-[2px] border-white/30 rounded-[48px] pointer-events-none"
             style={{
               transform: 'translateZ(1px)',
-              opacity: useTransform(isOver, (over) => over ? 1 : 0),
+              opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0),
               maskImage: useTransform(
                 [lightX, lightY],
-                ([lx, ly]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
+                ([lx, ly]: any[]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
               ),
               WebkitMaskImage: useTransform(
                 [lightX, lightY],
-                ([lx, ly]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
+                ([lx, ly]: any[]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
               )
-            }}
+            } as any}
           />
         )}
       </motion.div>
