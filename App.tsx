@@ -1,15 +1,21 @@
-
-import React from 'react';
+import React, { Suspense, lazy } from 'react'; //
 import { LanguageProvider } from './context/LanguageContext.tsx';
 import { KineticProvider } from './context/KineticContext.tsx';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
-import Services from './components/Services.tsx';
-import Work from './components/Work.tsx';
-import About from './components/About.tsx';
-import DesignPhilosophy from './components/DesignPhilosophy.tsx';
-import Footer from './components/Footer.tsx';
 import { CustomCursor } from './components/CustomCursor.tsx';
+
+// #MCRD OPTIMIZATION: Code Splitting Táctico
+// Diferimos la carga de componentes pesados que no son visibles al inicio.
+// Esto reduce drásticamente el JS inicial necesario para arrancar.
+const Services = lazy(() => import('./components/Services.tsx'));
+const Work = lazy(() => import('./components/Work.tsx'));
+const About = lazy(() => import('./components/About.tsx'));
+const DesignPhilosophy = lazy(() => import('./components/DesignPhilosophy.tsx'));
+const Footer = lazy(() => import('./components/Footer.tsx'));
+
+// Componente de carga ultraligero (invisible o spinner minimalista)
+const SectionLoader = () => <div className="w-full h-20 bg-transparent" />;
 
 const App: React.FC = () => {
   return (
@@ -17,15 +23,34 @@ const App: React.FC = () => {
       <KineticProvider>
         <div className="relative w-full min-h-screen bg-background text-text selection:bg-accent selection:text-background transition-colors duration-500 overflow-x-hidden">
           <CustomCursor />
+          
+          {/* CRÍTICO: Navbar y Hero se mantienen síncronos para LCP instantáneo */}
           <Navbar />
+          
           <main>
             <Hero />
-            <Services />
-            <Work />
-            <About />
-            <DesignPhilosophy />
+            
+            {/* El resto se carga en paralelo mientras el usuario admira el Hero */}
+            <Suspense fallback={<SectionLoader />}>
+              <Services />
+            </Suspense>
+            
+            <Suspense fallback={<SectionLoader />}>
+              <Work />
+            </Suspense>
+            
+            <Suspense fallback={<SectionLoader />}>
+              <About />
+            </Suspense>
+            
+            <Suspense fallback={<SectionLoader />}>
+              <DesignPhilosophy />
+            </Suspense>
           </main>
-          <Footer />
+          
+          <Suspense fallback={<SectionLoader />}>
+            <Footer />
+          </Suspense>
         </div>
       </KineticProvider>
     </LanguageProvider>

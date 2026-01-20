@@ -28,14 +28,25 @@ export default defineConfig({
   plugins: [
     react(),
     stripFallbacks(),
-    injectCss() // <--- El Agente de Inyección
+    injectCss()
   ],
   base: './',
   root: '.',
   build: {
     outDir: 'dist',
+    // #MCRD OPTIMIZATION: Minificación agresiva
+    minify: 'esbuild', 
+    cssMinify: true,
     rollupOptions: {
       input: 'index.html',
+      output: {
+        // Estrategia de Cacheo de Largo Plazo
+        manualChunks: {
+          'react-core': ['react', 'react-dom'],
+          'motion-engine': ['motion/react'], // Aislamos el motor de animación (es pesado)
+          // Si usas otras librerías pesadas (ej. three.js), agrégalas aquí.
+        }
+      }
     },
   },
   server: {
