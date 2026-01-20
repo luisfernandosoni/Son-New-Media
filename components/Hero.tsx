@@ -23,11 +23,14 @@ const SentinelRing: React.FC<{
   relX: MotionValue<number>; 
   relY: MotionValue<number>; 
 }> = ({ index, relX, relY }) => {
-  const zDepth = index * -30;
+  // Increased Z-Depth by 20% (30 -> 36)
+  const zDepth = index * -36;
   const ringSpringX = useSpring(relX, { stiffness: 60 - index * 3, damping: 25 + index });
   const ringSpringY = useSpring(relY, { stiffness: 60 - index * 3, damping: 25 + index });
-  const rX = useTransform(ringSpringY, [-1, 1], [45, -45]);
-  const rY = useTransform(ringSpringX, [-1, 1], [-45, 45]);
+  
+  // Increased rotation range by 20% (45 -> 54)
+  const rX = useTransform(ringSpringY, [-1, 1], [54, -54]);
+  const rY = useTransform(ringSpringX, [-1, 1], [-54, 54]);
 
   return (
     <motion.div
@@ -62,16 +65,27 @@ const SentinelCore = () => {
     return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
   });
 
-  const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
-    Math.min(Math.sqrt(Math.pow(Number(vx || 0), 2) + Math.pow(Number(vy || 0), 2)) / 15, 1)
-  );
+  // Momentum Stabilization (Fixed Divisor for high-DPI smooth gradients)
+  const rawSpeed = useTransform([velX, velY], ([vx, vy]: number[]) => {
+    const s = Math.sqrt(Math.pow(Number(vx || 0), 2) + Math.pow(Number(vy || 0), 2));
+    return Math.min(s / 3000, 1);
+  });
+  
+  const smoothSpeed = useSpring(rawSpeed, { 
+    stiffness: 40,
+    damping: 30,
+    mass: 1,
+    restDelta: 0.001
+  });
 
   const springX = useSpring(relX, { stiffness: 45, damping: 35 });
   const springY = useSpring(relY, { stiffness: 45, damping: 35 });
 
   const rings = useMemo(() => Array.from({ length: 14 }), []);
-  const rotateX = useTransform(springY, [-1, 1], [35, -35]);
-  const rotateY = useTransform(springX, [-1, 1], [-35, 35]);
+  
+  // Increased container rotation limits by 20% (35 -> 42)
+  const rotateX = useTransform(springY, [-1, 1], [42, -42]);
+  const rotateY = useTransform(springX, [-1, 1], [-42, 42]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative group flex items-center justify-center perspective-[2500px] overflow-hidden rounded-[64px] bg-accent/[0.02] dark:bg-black/20 border border-accent/5 transition-all duration-700 hover:border-accent/20">
@@ -91,7 +105,7 @@ const SentinelCore = () => {
         {rings.map((_, i) => (
           <SentinelRing key={i} index={i} relX={relX} relY={relY} />
         ))}
-        <motion.div style={{ translateZ: 150, scale: useTransform(speed, [0, 1], [1, 0.7]), transformStyle: "preserve-3d" } as any} className="relative z-50">
+        <motion.div style={{ translateZ: 150, scale: useTransform(smoothSpeed, [0, 1], [1, 0.92]), transformStyle: "preserve-3d" } as any} className="relative z-50">
           <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center shadow-[0_0_80px_rgba(var(--accent-rgb),0.6)]">
             <motion.div style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.15) } as any} className="w-4 h-4 rounded-full bg-background" />
           </div>
