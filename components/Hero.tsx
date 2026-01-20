@@ -1,8 +1,42 @@
 
+/* 
+ * RULES SUMMARY:
+ * 1. Focus on one core task per sprint.
+ * 2. Maintain SV Top 10 VP/Senior standard.
+ * 3. Use bleeding-edge technology/design.
+ * 4. Strive for Apple-level aesthetic perfection.
+ * 5. No unsolicited changes.
+ * 6. Inform and explain work.
+ * 7. Leverage Cloudflare 2026 Ecosystem.
+ * 8. Always start by summarizing rules.
+ */
+
 import React, { useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useAnimationFrame, useVelocity, useTime, MotionValue } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
+
+const AnamorphicStreak = () => {
+  const mouseX = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 20 });
+  const xTransform = useTransform(springX, [0, 1], ["-20%", "20%"]);
+
+  useAnimationFrame(() => {
+    const root = document.documentElement;
+    const mxVal = root.style.getPropertyValue('--mouse-x');
+    if (mxVal) {
+      const mx = parseFloat(mxVal) / window.innerWidth;
+      mouseX.set(mx);
+    }
+  });
+
+  return (
+    <motion.div 
+      style={{ x: xTransform }}
+      className="absolute top-1/2 left-0 w-[200%] h-[1px] bg-gradient-to-r from-transparent via-accent/20 to-transparent -translate-y-1/2 pointer-events-none blur-[2px] z-[1]"
+    />
+  );
+};
 
 const SentinelRing: React.FC<{ 
   index: number; 
@@ -88,21 +122,21 @@ const SentinelCore = () => {
         </motion.div>
       </motion.div>
       <div className="absolute inset-0 z-[60] p-10 flex flex-col justify-between pointer-events-none">
-        <div className="flex justify-between items-start opacity-60">
-          <div className="space-y-1">
-            <p className="text-[8px] uppercase tracking-[0.4em] font-bold text-accent italic">Status // Operational</p>
-            <p className="text-[7px] font-mono text-accent">X-RAY_KINETIC_ALPHA</p>
+        <div className="flex justify-between items-start opacity-70">
+          <div className="space-y-1.5">
+            <p className="text-nano uppercase tracking-widest-2x font-semibold text-accent italic">Status // Operational</p>
+            <p className="text-nano font-mono text-accent/90 uppercase">X-RAY_KINETIC_ALPHA</p>
           </div>
-          <div className="text-[7px] font-mono text-accent text-right">UPTIME: 0.9999</div>
+          <div className="text-nano font-mono text-accent text-right uppercase">UPTIME: 0.9999</div>
         </div>
         <div className="w-full flex justify-between items-end">
-          <div className="bg-accent/5 backdrop-blur-md border border-accent/10 px-5 py-3 rounded-xl overflow-hidden relative transition-colors hover:bg-accent/10">
-            <p className="text-[7px] uppercase tracking-[0.3em] text-accent/50 mb-1 font-bold">Kinetic_Drive</p>
-            <h3 className="text-accent/90 font-display text-xs font-medium tracking-tight uppercase">Sentinel_VII</h3>
+          <div className="bg-accent/5 backdrop-blur-md border border-accent/10 px-6 py-4 rounded-xl overflow-hidden relative transition-colors hover:bg-accent/10">
+            <p className="text-nano uppercase tracking-widest-2x text-accent/50 mb-1.5 font-bold">Kinetic_Drive</p>
+            <h3 className="text-accent/95 font-display text-base font-medium tracking-tight uppercase">Sentinel_VII</h3>
           </div>
-          <div className="flex gap-1 items-end h-3">
+          <div className="flex gap-2 items-end h-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <motion.div key={i} animate={{ height: [2, 10, 2] }} transition={{ repeat: Infinity, duration: 1 + i * 0.1, ease: "easeInOut" }} className="w-[1.5px] bg-accent/40" />
+              <motion.div key={i} animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 1 + i * 0.1, ease: "easeInOut" }} className="w-[2.5px] bg-accent/50" />
             ))}
           </div>
         </div>
@@ -115,26 +149,24 @@ const Hero: React.FC = () => {
   const { t, language } = useLanguage();
   
   return (
-    <section className="relative pt-24 pb-16 lg:pt-40 lg:pb-24 overflow-hidden px-6">
+    <section className="relative pt-24 pb-16 lg:pt-44 lg:pb-24 overflow-hidden px-6">
+      <AnamorphicStreak />
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 lg:items-stretch">
         
-        {/* TEXT CONTENT - Balanced and Responsive */}
         <motion.div 
           initial={{ opacity: 0, x: -30 }} 
           animate={{ opacity: 1, x: 0 }} 
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }} 
-          className="relative z-20 flex flex-col justify-between lg:h-[580px] py-2"
+          className="relative z-20 flex flex-col justify-between lg:h-[680px] py-4"
         >
-          {/* TOP: Tag */}
           <div className="mb-8 lg:mb-0">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-4 px-4 py-1.5 rounded-full border border-accent/10 bg-accent/[0.03]">
-              <div className="relative w-1.5 h-1.5"><div className="absolute inset-0 bg-accent rounded-full animate-ping opacity-40" /><div className="relative w-full h-full bg-accent rounded-full" /></div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.5em] text-accent/50">{t('hero.tag')}</span>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-5 px-5 py-2 rounded-full border border-accent/10 bg-accent/[0.04]">
+              <div className="relative w-2 h-2"><div className="absolute inset-0 bg-accent rounded-full animate-ping opacity-50" /><div className="relative w-full h-full bg-accent rounded-full" /></div>
+              <span className="text-label-fluid font-bold uppercase tracking-widest-3x text-accent/70">{t('hero.tag')}</span>
             </motion.div>
           </div>
 
-          {/* MIDDLE: Fluid Title & Description */}
-          <div className="space-y-6 lg:space-y-8">
+          <div className="space-y-10">
             <AnimatePresence mode="wait">
               <motion.h1 
                 key={language} 
@@ -142,32 +174,31 @@ const Hero: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }} 
                 exit={{ opacity: 0, y: -20 }} 
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} 
-                className="font-display text-[clamp(2.5rem,7vw,4.5rem)] font-medium tracking-tighter leading-[0.95] text-text"
+                className="font-display text-h1-fluid font-medium text-text tracking-[-0.03em]"
               >
                 {t('hero.title1')}<br />{t('hero.title2')}<br />
-                <span className="text-text/20 block mt-4 font-light italic text-[clamp(1.5rem,4vw,3rem)] tracking-normal">{t('hero.title3')}</span>
+                <span className="text-text/20 block mt-8 font-light italic text-[clamp(2rem,6vw,4.5rem)] tracking-normal">{t('hero.title3')}</span>
               </motion.h1>
             </AnimatePresence>
-            <p className="text-sm md:text-base text-secondary max-w-sm font-light leading-relaxed tracking-tight opacity-80">
+            <p className="text-body-fluid text-secondary max-w-md font-light tracking-tight opacity-95">
               {t('hero.desc')}
             </p>
           </div>
 
-          {/* BOTTOM: CTAs */}
-          <div className="flex flex-wrap items-center gap-8 pt-8 lg:pt-0 relative z-30">
+          <div className="flex flex-wrap items-center gap-10 pt-10 lg:pt-0 relative z-30">
             <Magnetic strength={0.1} radius={200}>
-              <a href="#work" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-accent px-8 transition-all duration-500 hover:scale-105 active:scale-95">
-                <span className="relative z-10 flex items-center gap-3 text-[9px] tracking-[0.4em] uppercase font-bold text-accent-contrast">
+              <a href="#work" className="group relative inline-flex h-16 items-center justify-center overflow-hidden rounded-full bg-accent px-12 transition-all duration-500 hover:scale-105 active:scale-95">
+                <span className="relative z-10 flex items-center gap-4 text-label-fluid tracking-widest-2x font-bold text-accent-contrast">
                   {t('hero.btn')}
-                  <span className="material-icons-outlined text-sm">north_east</span>
+                  <span className="material-icons-outlined text-xl">north_east</span>
                 </span>
                 <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
               </a>
             </Magnetic>
             <Magnetic strength={0.2} radius={100}>
-              <button className="group flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-secondary hover:text-text transition-all">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-accent/10 group-hover:border-accent">
-                  <span className="material-icons-outlined text-base">play_arrow</span>
+              <button className="group flex items-center gap-5 text-label-fluid font-bold uppercase tracking-widest-2x text-secondary hover:text-text transition-all">
+                <div className="flex items-center justify-center w-14 h-14 rounded-full border border-accent/15 group-hover:border-accent">
+                  <span className="material-icons-outlined text-2xl">play_arrow</span>
                 </div>
                 {t('hero.reel')}
               </button>
@@ -175,12 +206,11 @@ const Hero: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* VISUAL CONTENT - The Reduced Anchor Box */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }} 
           animate={{ opacity: 1, scale: 1 }} 
           transition={{ duration: 1.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }} 
-          className="relative h-[450px] w-full lg:h-[580px] flex items-center justify-center z-10"
+          className="relative h-[520px] w-full lg:h-[680px] flex items-center justify-center z-10"
         >
           <SentinelCore />
         </motion.div>

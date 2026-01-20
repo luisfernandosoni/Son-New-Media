@@ -30,6 +30,22 @@
               sans: ["Inter", "sans-serif"],
               display: ["Space Grotesk", "sans-serif"],
             },
+            fontSize: {
+              // Master Modular Scale (2026 Core)
+              'nano': ['clamp(0.81rem, 0.6vw, 0.88rem)', { lineHeight: '1.4', letterSpacing: '0.12em' }],
+              'body-fluid': ['clamp(1.06rem, 1.2vw, 1.2rem)', { lineHeight: '1.62', letterSpacing: '-0.01em' }],
+              'label-fluid': ['clamp(0.85rem, 0.7vw, 0.95rem)', { lineHeight: '1.2', letterSpacing: '0.2em' }],
+              
+              // Unified Header Scales
+              'h1-fluid': ['clamp(3.5rem, 10vw, 7.5rem)', { lineHeight: '0.9', letterSpacing: '-0.05em' }],
+              'h2-fluid': ['clamp(3rem, 7.5vw, 6.5rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
+              'h3-fluid': ['clamp(1.75rem, 3.5vw, 2.5rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
+              'card-title-fluid': ['clamp(1.5rem, 2.2vw, 2.1rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
+            },
+            letterSpacing: {
+              'widest-2x': '0.3em',
+              'widest-3x': '0.45em',
+            }
           },
         },
       };
@@ -47,6 +63,9 @@
         background-color: var(--background);
         cursor: none !important;
         overflow-x: hidden;
+        font-optical-sizing: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       .noise-overlay {
         position: fixed;
@@ -64,7 +83,7 @@
         root.style.setProperty('--mouse-y', `${e.clientY}px`);
       }, { passive: true });
     </script>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
@@ -80,7 +99,6 @@
   <body>
     <div id="root"></div>
     <div class="noise-overlay"></div>
-    <!-- Relative path for deployment stability -->
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>

@@ -3,37 +3,37 @@ export const translations = {
   en: {
     nav: {
       services: 'Services',
-      work: 'Work',
-      about: 'About',
-      contact: 'Contact'
+      work: 'Archive',
+      about: 'Studio',
+      contact: 'Access'
     },
     hero: {
-      tag: 'Intelligence Agency',
+      tag: 'Cinema Intelligence',
       title1: 'Hybrid',
-      title2: 'Filmmaking',
-      title3: '& Media.',
+      title2: 'Cinema',
+      title3: '& New Media.',
       desc: 'We architect high-fidelity digital experiences and cinematic content using sovereign AI workflows.',
-      btn: 'Explore Work',
-      reel: 'Process Reel'
+      btn: 'Enter Archive',
+      reel: 'Cinematic Reel'
     },
     services: {
       tag: 'Capabilities',
       title: 'Our Intelligence.',
-      desc: 'We bridge the gap between artistic direction and computational efficiency.',
+      desc: 'Bridging the gap between artistic direction and computational efficiency.',
       items: [
-        { id: '1', number: '01', icon: 'movie_filter', title: 'Hybrid Filmmaking', description: 'Merging raw cinematography with real-time neural engines to architect hyper-real cinematic worlds that redefine the visual frontier.' },
-        { id: '2', number: '02', icon: 'smart_toy', title: 'AI Agents & Automation', description: 'Architecting autonomous cognitive workflows that automate high-fidelity content production with sovereign machine intelligence.' },
-        { id: '3', number: '03', icon: 'web', title: 'High-end Web', description: 'Spatial, performance-first web architectures designed for 2026 aesthetics, blending fluid motion with ultra-minimalist interfaces.' },
-        { id: '4', number: '04', icon: 'sensors', title: 'Streaming', description: 'Next-generation interactive broadcasting using decentralized edge protocols and AI-driven real-time visual enhancement.' },
-        { id: '5', number: '05', icon: 'ads_click', title: 'Meta Ads', description: 'Performance marketing powered by generative creative engines and predictive algorithmic targeting for maximum conversion velocity.' }
+        { id: '1', number: '01', icon: 'movie_filter', title: 'Hybrid Cinema', description: 'Merging raw cinematography with real-time neural engines to architect hyper-real cinematic worlds that redefine the visual frontier.' },
+        { id: '2', number: '02', icon: 'smart_toy', title: 'New Media AI', description: 'Architecting autonomous cognitive workflows that automate high-fidelity content production with sovereign machine intelligence.' },
+        { id: '3', number: '03', icon: 'web', title: 'Spatial Web', description: 'Spatial, performance-first web architectures designed for 2026 aesthetics, blending fluid motion with ultra-minimalist interfaces.' },
+        { id: '4', number: '04', icon: 'sensors', title: 'Real-time Media', description: 'Next-generation interactive broadcasting using decentralized edge protocols and AI-driven real-time visual enhancement.' },
+        { id: '5', number: '05', icon: 'ads_click', title: 'Algorithmic Ads', description: 'Performance marketing powered by generative creative engines and predictive algorithmic targeting for maximum conversion velocity.' }
       ],
       custom: 'Custom Architecture?',
       customDesc: "Let's build a proprietary solution.",
       cta: 'Request Access'
     },
     work: {
-      tag: 'Selected Works',
-      title: 'Digital Sculptures.'
+      tag: 'The Archive',
+      title: 'Cinematic Artifacts.'
     },
     about: {
       tag: 'The Sovereignty',
@@ -55,18 +55,18 @@ export const translations = {
   es: {
     nav: {
       services: 'Servicios',
-      work: 'Proyectos',
-      about: 'Nosotros',
-      contact: 'Contacto'
+      work: 'Archivo',
+      about: 'Estudio',
+      contact: 'Acceso'
     },
     hero: {
-      tag: 'Agencia de Inteligencia',
+      tag: 'Cine Inteligente',
       title1: 'Cine',
       title2: 'Híbrido',
-      title3: '& Medios.',
+      title3: '& Nuevos Medios.',
       desc: 'Arquitectamos experiencias digitales de alta fidelidad y contenido cinematográfico utilizando flujos de IA soberanos.',
-      btn: 'Explorar Proyectos',
-      reel: 'Ver Reel'
+      btn: 'Ver Archivo',
+      reel: 'Reel Cine'
     },
     services: {
       tag: 'Capacidades',
@@ -74,17 +74,17 @@ export const translations = {
       desc: 'Cerramos la brecha entre la dirección artística y la eficiencia computacional.',
       items: [
         { id: '1', number: '01', icon: 'movie_filter', title: 'Cine Híbrido', description: 'Fusionando cinematografía raw con motores neurales en tiempo real para arquitectar mundos hiperreales que redefinen la frontera visual.' },
-        { id: '2', number: '02', icon: 'smart_toy', title: 'Agentes IA & Automatización', description: 'Arquitectando flujos cognitivos autónomos que automatizan la producción de contenido de alta fidelidad con inteligencia soberana.' },
-        { id: '3', number: '03', icon: 'web', title: 'Web de Alta Gama', description: 'Arquitecturas web espaciales de alto rendimiento diseñadas para la estética de 2026, fusionando movimiento fluido con interfaces ultra minimalistas.' },
-        { id: '4', number: '04', icon: 'sensors', title: 'Streaming', description: 'Transmisión interactiva de próxima generación utilizando protocolos de borde descentralizados y mejora visual por IA en tiempo real.' },
-        { id: '5', number: '05', icon: 'ads_click', title: 'Meta Ads', description: 'Marketing de rendimiento impulsado por motores creativos generativos y segmentación algorítmica predictiva para máxima velocidad de conversión.' }
+        { id: '2', number: '02', icon: 'smart_toy', title: 'Nuevos Medios AI', description: 'Arquitectando flujos cognitivos autónomos que automatizan la producción de contenido de alta fidelidad con inteligencia soberana.' },
+        { id: '3', number: '03', icon: 'web', title: 'Web Espacial', description: 'Arquitecturas web espaciales de alto rendimiento diseñadas para la estética de 2026, fusionando movimiento fluido con interfaces ultra minimalistas.' },
+        { id: '4', number: '04', icon: 'sensors', title: 'Media en Tiempo Real', description: 'Transmisión interactiva de próxima generación utilizando protocolos de borde descentralizados y mejora visual por IA en tiempo real.' },
+        { id: '5', number: '05', icon: 'ads_click', title: 'Ads Algorítmicos', description: 'Marketing de rendimiento impulsado por motores creativos generativos y segmentación algorítmica predictiva para máxima velocidad de conversión.' }
       ],
       custom: '¿Arquitectura a Medida?',
       customDesc: 'Construyamos una solución propietaria.',
       cta: 'Solicitar Acceso'
     },
     work: {
-      tag: 'Trabajos Seleccionados',
+      tag: 'El Archivo',
       title: 'Esculturas Digitales.'
     },
     about: {

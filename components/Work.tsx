@@ -1,18 +1,14 @@
 
 /* 
- * UNBREAKABLE RULES SUMMARY:
- * 1. Focus on 1 core task per sprint.
- * 2. Silicon Valley Senior Engineer standard.
- * 3. Bleeding-edge design/tech.
- * 4. Steve Jobs/Jony Ive approved aesthetics.
+ * RULES SUMMARY:
+ * 1. Focus on one core task per sprint.
+ * 2. Maintain SV Top 10 VP/Senior standard.
+ * 3. Use bleeding-edge technology/design.
+ * 4. Strive for Apple-level aesthetic perfection.
  * 5. No unsolicited changes.
- * 6. Inform/Explain for learning.
- * 7. Cloudflare 2026 Ecosystem.
- * 
- * SPRINT LOG:
- * Updated "Project Aether" visual asset to a high-fidelity iridescent render.
- * The choice of imagery aligns with the "Generative Product Campaign" 
- * category, providing a sophisticated sci-fi aesthetic for the 2026 agency identity.
+ * 6. Inform and explain work.
+ * 7. Leverage Cloudflare 2026 Ecosystem.
+ * 8. Always start by summarizing rules.
  */
 
 import React, { useRef } from 'react';
@@ -23,43 +19,37 @@ import { WorkItem } from '../types.ts';
 const works: WorkItem[] = [
   { 
     id: '1', 
-    title: 'Project Aether', 
-    category: 'Generative Product Campaign', 
-    year: '2025', 
+    title: 'Neural Cinema v.01', 
+    category: 'Hybrid Filmmaking Prototype', 
+    year: '2026', 
     image: 'https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&q=80&w=1600', 
     wide: true 
   },
-  { id: '2', title: 'Datastream V', category: 'Automated Interface Design', year: '2023', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800', wide: false },
-  { id: '3', title: 'Kinetic Labs', category: 'AI Robotics Showcase', year: '2024', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800', wide: false },
+  { id: '2', title: 'Media Sovereignty', category: 'Autonomous New Media Engine', year: '2025', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800', wide: false },
+  { id: '3', title: 'Aetheric Archive', category: 'Spatial Cinematic Experience', year: '2026', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800', wide: false },
 ];
 
 const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // High-performance motion values for 3D tilt
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Kinetic speed calculation for dynamic specularity
   const xVelocity = useVelocity(mouseX);
   const yVelocity = useVelocity(mouseY);
   const speed = useTransform([xVelocity, yVelocity], ([vx, vy]) => 
     Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2))
   );
 
-  // Smooth springs for "Premium Material" feel
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), springConfig);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), springConfig);
   
-  // Internal Parallax (Inverse movement of the image)
   const imageX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-20, 20]), springConfig);
   const imageY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-20, 20]), springConfig);
 
-  // Dynamic Shine (Specularity)
   const shineX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   
-  // We use a smoothed speed to avoid jitter in the specularity layer
   const smoothSpeed = useSpring(speed, { damping: 50, stiffness: 200 });
   const shineOpacity = useTransform(smoothSpeed, [0, 2000], [0, 0.3]);
 
@@ -93,7 +83,6 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
         style={{ rotateX, rotateY }}
         className="relative overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform"
       >
-        {/* Dynamic Specularity Layer */}
         <motion.div 
           style={{ 
             background: `radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
@@ -102,7 +91,6 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
           className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
         />
 
-        {/* Viewport Frame */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <motion.img
             src={item.image}
@@ -111,31 +99,29 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
             className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-out"
           />
           
-          {/* Spatial Overlay Labels */}
           <div className="absolute inset-0 z-10 p-10 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-white uppercase opacity-60">Archive_{item.year}</span>
+              <span className="text-nano font-bold tracking-widest-2x text-white uppercase opacity-70">Archive_{item.year}</span>
               <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md">
                 <span className="material-icons-outlined text-white text-sm">north_east</span>
               </div>
             </div>
             
-            <div className="space-y-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
-              <h3 className="text-white font-display text-4xl font-medium tracking-tight">{item.title}</h3>
-              <p className="text-white/60 text-sm font-light max-w-xs">{item.category}</p>
+            <div className="space-y-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+              <h3 className="text-white font-display text-h3-fluid font-medium">{item.title}</h3>
+              <p className="text-white/70 text-body-fluid font-light max-w-xs">{item.category}</p>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Floating Meta-Info */}
       <div className="mt-8 flex justify-between items-end px-2">
-        <div className="space-y-1">
-          <h4 className="text-sm font-semibold text-text uppercase tracking-widest">{item.title}</h4>
-          <p className="text-xs text-secondary">{item.category}</p>
+        <div className="space-y-2">
+          <h4 className="text-label-fluid font-semibold text-text uppercase tracking-widest-2x">{item.title}</h4>
+          <p className="text-nano text-secondary font-medium uppercase tracking-widest">{item.category}</p>
         </div>
-        <div className="h-[1px] flex-grow mx-8 bg-border opacity-50 mb-2" />
-        <span className="text-[10px] font-mono text-secondary tabular-nums">©{item.year}</span>
+        <div className="h-[1px] flex-grow mx-8 bg-border opacity-50 mb-3" />
+        <span className="text-nano font-mono text-secondary tabular-nums font-bold mb-1">©{item.year}</span>
       </div>
     </motion.div>
   );
@@ -144,26 +130,26 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
 const Work: React.FC = () => {
   const { t } = useLanguage();
   return (
-    <section id="work" className="py-40 bg-background overflow-hidden">
+    <section id="work" className="py-16 lg:py-24 bg-background overflow-hidden scroll-mt-20">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-32 border-l-2 border-accent pl-10">
-          <div className="space-y-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-40 border-l-[3px] border-accent pl-12">
+          <div className="space-y-10 max-w-5xl">
             <motion.span 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="text-xs font-bold uppercase tracking-[0.4em] text-secondary block"
+              className="text-label-fluid font-bold uppercase tracking-widest-3x text-secondary block"
             >
               {t('work.tag')}
             </motion.span>
-            <h2 className="font-display text-6xl md:text-8xl font-medium tracking-tighter text-text">
+            <h2 className="font-display text-h2-fluid font-medium text-text">
               {t('work.title')}
             </h2>
           </div>
-          <div className="mt-12 md:mt-0 text-right">
-             <p className="text-secondary max-w-xs text-sm leading-relaxed mb-6">
-               Curating digital artifacts through the lens of machine intelligence and human craft.
+          <div className="mt-16 md:mt-0 text-right">
+             <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">
+               Curating the intersection of Cine Híbrido and sovereign machine intelligence.
              </p>
-             <button className="text-[10px] uppercase tracking-[0.3em] font-bold text-accent border-b border-accent pb-1 hover:opacity-60 transition-opacity">
+             <button className="text-label-fluid uppercase tracking-widest-2x font-bold text-accent border-b-2 border-accent pb-1 hover:opacity-60 transition-opacity">
                View Full Archive
              </button>
           </div>
