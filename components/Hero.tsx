@@ -1,10 +1,11 @@
 
 import React, { useRef, useMemo } from 'react';
-import { motion, useSpring, useTransform, useTime, MotionValue, AnimatePresence } from 'motion/react';
+import { motion, useSpring, useTransform, useTime, MotionValue, AnimatePresence, useInView } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { useKinetic } from '../context/KineticContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
 
+// --- COMPONENT: AnamorphicStreak ---
 const AnamorphicStreak = () => {
   const { mouseX } = useKinetic();
   const xTransform = useTransform(mouseX, [0, window.innerWidth], ["-20%", "20%"]);
@@ -18,22 +19,39 @@ const AnamorphicStreak = () => {
   );
 };
 
-const SentinelRing: React.FC<{ 
+// --- COMPONENT: SentinelRing (Isolated) ---
+// Using React.memo to prevent unnecessary re-renders during parent physics updates
+const SentinelRing = React.memo(({ 
+  index, 
+  relX, 
+  relY, 
+  isMobile 
+}: { 
   index: number; 
   relX: MotionValue<number>; 
   relY: MotionValue<number>;
   isMobile: boolean;
-}> = ({ index, relX, relY, isMobile }) => {
-  // Responsive Depth & Size Scaling
+}) => {
+  // 1. Adaptive Logic
   const depthFactor = isMobile ? 22 : 36;
   const baseSize = isMobile ? 45 : 80;
-  const sizeStep = isMobile ? 18 : 32;
+  const sizeStep = isMobile ? 22 : 32;
 
   const zDepth = index * -depthFactor;
-  const ringSpringX = useSpring(relX, { stiffness: 60 - index * 3, damping: 25 + index });
-  const ringSpringY = useSpring(relY, { stiffness: 60 - index * 3, damping: 25 + index });
   
-  // High-response rotation limits
+  // 2. Physics Config (Throttled for mobile battery)
+  // useMemo ensures config object stability to prevent useSpring churn
+  const springConfig = useMemo(() => ({ 
+    stiffness: 60 - index * 3, 
+    damping: 25 + index,
+    restDelta: isMobile ? 0.01 : 0.001,
+    restSpeed: isMobile ? 0.01 : 0.001
+  }), [index, isMobile]);
+
+  const ringSpringX = useSpring(relX, springConfig);
+  const ringSpringY = useSpring(relY, springConfig);
+  
+  // 3. Transforms
   const rX = useTransform(ringSpringY, [-1, 1], [54, -54]);
   const rY = useTransform(ringSpringX, [-1, 1], [-54, 54]);
 
@@ -45,25 +63,114 @@ const SentinelRing: React.FC<{
         rotateX: rX,
         rotateY: rY,
         translateZ: zDepth,
-        opacity: 0.9 - (index * 0.05),
+        opacity: isMobile ? 0.95 - (index * 0.08) : 0.9 - (index * 0.05),
+        transformStyle: "preserve-3d",
       } as any}
-      animate={{ rotate: 360 }}
-      transition={{ duration: 25 + index * 3, repeat: Infinity, ease: "linear" }}
-      className="absolute border border-accent/80 dark:border-accent/30 rounded-full"
-    />
+      className="absolute flex items-center justify-center will-change-transform"
+    >
+      {/* Inner Container: Handles Infinite Spin via CSS */}
+      <div 
+        className="w-full h-full rounded-full border border-accent/80 dark:border-accent/30 animate-spin"
+        style={{
+          borderWidth: isMobile ? '1.5px' : '1px',
+          animationDuration: `${25 + index * 3}s`,
+          animationTimingFunction: 'linear'
+        }}
+      />
+    </motion.div>
+  );
+});
+
+// --- COMPONENT: SentinelAssembly (Extracted for Hook Stability) ---
+// Isolate the map loop to prevent hook count mismatches in the parent
+const SentinelAssembly: React.FC<{
+  relX: MotionValue<number>;
+  relY: MotionValue<number>;
+  isMobile: boolean;
+  smoothSpeed: MotionValue<number>;
+  time: MotionValue<number>;
+  rotateX: MotionValue<number>;
+  rotateY: MotionValue<number>;
+}> = ({ relX, relY, isMobile, smoothSpeed, time, rotateX, rotateY }) => {
+  
+  const ringCount = isMobile ? 9 : 14;
+  // Stable array creation
+  const rings = useMemo(() => Array.from({ length: ringCount }), [ringCount]);
+
+  return (
+    <>
+      <div className="absolute inset-0 opacity-[0.1] pointer-events-none">
+        {Array.from({ length: isMobile ? 8 : 12 }).map((_, i) => (
+          <motion.div 
+            key={`grid-${i}`}
+            initial={{ y: "-20%" }}
+            animate={{ y: "120%" }}
+            transition={{ duration: 6 + i, repeat: Infinity, ease: "linear", delay: i * 0.5 }}
+            style={{ left: `${(i + 1) * (isMobile ? 12 : 8)}%`, width: '1px' } as any}
+            className="absolute h-48 bg-gradient-to-b from-transparent via-accent/30 to-transparent"
+          />
+        ))}
+      </div>
+
+      <motion.div 
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" } as any} 
+        className="relative w-full h-full flex items-center justify-center"
+      >
+        {rings.map((_, i) => (
+          <SentinelRing 
+            key={`ring-${i}`} 
+            index={i} 
+            relX={relX} 
+            relY={relY} 
+            isMobile={isMobile} 
+          />
+        ))}
+        
+        {/* Core Orb */}
+        <motion.div 
+          style={{ 
+            translateZ: isMobile ? 80 : 150, 
+            scale: useTransform(smoothSpeed, [0, 1], [1, 0.92]), 
+            transformStyle: "preserve-3d" 
+          } as any} 
+          className="relative z-50"
+        >
+          <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-accent flex items-center justify-center shadow-[0_0_80px_rgba(var(--accent-rgb),0.6)]">
+            <motion.div 
+              style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.15) } as any} 
+              className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-background" 
+            />
+          </div>
+          <motion.div 
+            animate={{ scale: [1, 1.6, 1], opacity: [0.3, 0.1, 0.3] }} 
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+            className="absolute inset-0 -m-8 lg:-m-12 bg-accent/30 blur-2xl lg:blur-3xl rounded-full -z-10" 
+          />
+        </motion.div>
+      </motion.div>
+    </>
   );
 };
 
+// --- COMPONENT: SentinelCore (Main Physics Engine) ---
 const SentinelCore = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // PERFORMANCE: Spatial Culling
+  const isInView = useInView(containerRef, { margin: "200px" });
+  
   const { mouseX, mouseY, velX, velY, isMobile } = useKinetic();
   const time = useTime();
+
+  // --- UNCONDITIONAL HOOK EXECUTION ---
+  // All hooks declared here run every render, ensuring stability (Fix Error #310)
 
   const relX = useTransform(mouseX, (x: number) => {
     if (!containerRef.current) return 0;
     const rect = containerRef.current.getBoundingClientRect();
     return (x - (rect.left + rect.width / 2)) / (rect.width / 2);
   });
+  
   const relY = useTransform(mouseY, (y: number) => {
     if (!containerRef.current) return 0;
     const rect = containerRef.current.getBoundingClientRect();
@@ -79,14 +186,12 @@ const SentinelCore = () => {
     stiffness: 40,
     damping: 30,
     mass: 1,
-    restDelta: 0.001
+    restDelta: 0.005
   });
 
-  const springX = useSpring(relX, { stiffness: 45, damping: 35 });
-  const springY = useSpring(relY, { stiffness: 45, damping: 35 });
+  const springX = useSpring(relX, { stiffness: 45, damping: 35, restDelta: 0.005 });
+  const springY = useSpring(relY, { stiffness: 45, damping: 35, restDelta: 0.005 });
 
-  const rings = useMemo(() => Array.from({ length: 14 }), []);
-  
   const rotateX = useTransform(springY, [-1, 1], [42, -42]);
   const rotateY = useTransform(springX, [-1, 1], [-42, 42]);
 
@@ -95,41 +200,18 @@ const SentinelCore = () => {
       ref={containerRef} 
       className="w-full h-full min-h-[420px] lg:min-h-0 aspect-square lg:aspect-auto relative group flex items-center justify-center perspective-[2500px] overflow-hidden rounded-[40px] lg:rounded-[64px] bg-accent/[0.02] dark:bg-black/20 border border-accent/5 transition-all duration-700 hover:border-accent/20"
     >
-      <div className="absolute inset-0 opacity-[0.1] pointer-events-none">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <motion.div 
-            key={i}
-            initial={{ y: "-20%" }}
-            animate={{ y: "120%" }}
-            transition={{ duration: 6 + i, repeat: Infinity, ease: "linear", delay: i * 0.5 }}
-            style={{ left: `${(i + 1) * 8}%`, width: '1px' } as any}
-            className="absolute h-48 bg-gradient-to-b from-transparent via-accent/30 to-transparent"
-          />
-        ))}
-      </div>
-      
-      <motion.div style={{ rotateX, rotateY, transformStyle: "preserve-3d" } as any} className="relative w-full h-full flex items-center justify-center">
-        {rings.map((_, i) => (
-          <SentinelRing key={i} index={i} relX={relX} relY={relY} isMobile={isMobile} />
-        ))}
-        <motion.div 
-          style={{ 
-            translateZ: isMobile ? 80 : 150, 
-            scale: useTransform(smoothSpeed, [0, 1], [1, 0.92]), 
-            transformStyle: "preserve-3d" 
-          } as any} 
-          className="relative z-50"
-        >
-          <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-accent flex items-center justify-center shadow-[0_0_80px_rgba(var(--accent-rgb),0.6)]">
-            <motion.div style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.15) } as any} className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-background" />
-          </div>
-          <motion.div 
-            animate={{ scale: [1, 1.6, 1], opacity: [0.3, 0.1, 0.3] }} 
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
-            className="absolute inset-0 -m-8 lg:-m-12 bg-accent/30 blur-2xl lg:blur-3xl rounded-full -z-10" 
-          />
-        </motion.div>
-      </motion.div>
+      {/* PERFORMANCE: Strict Separation of Logic and Rendering */}
+      {isInView && (
+        <SentinelAssembly 
+          relX={relX}
+          relY={relY}
+          isMobile={isMobile}
+          smoothSpeed={smoothSpeed}
+          time={time}
+          rotateX={rotateX}
+          rotateY={rotateY}
+        />
+      )}
       
       <div className="absolute inset-0 z-[60] p-8 lg:p-12 flex flex-col justify-between pointer-events-none">
         <div className="flex justify-between items-start opacity-50">
@@ -137,7 +219,7 @@ const SentinelCore = () => {
             <p className="text-[8px] lg:text-nano uppercase tracking-widest-3x font-bold text-accent italic">SYSTEM_CORE_V2</p>
             <p className="text-[7px] lg:text-[10px] font-mono text-accent/70 uppercase">PROXIMITY_AWARENESS_ACTIVE</p>
           </div>
-          <div className="text-[7px] lg:text-[10px] font-mono text-accent text-right uppercase tabular-nums tracking-widest">FPS: 120.0</div>
+          <div className="text-[7px] lg:text-[10px] font-mono text-accent text-right uppercase tabular-nums tracking-widest">FPS: {isMobile ? '60.0' : '120.0'}</div>
         </div>
         <div className="w-full flex justify-between items-end">
           <div className="bg-accent/[0.03] backdrop-blur-2xl border border-accent/10 px-5 py-3 lg:px-8 lg:py-5 rounded-xl lg:rounded-2xl relative transition-all hover:bg-accent/10">
@@ -155,6 +237,7 @@ const SentinelCore = () => {
   );
 };
 
+// --- COMPONENT: Hero ---
 const Hero: React.FC = () => {
   const { t, language } = useLanguage();
   

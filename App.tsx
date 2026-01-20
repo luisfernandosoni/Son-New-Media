@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react'; //
+
 import { LanguageProvider } from './context/LanguageContext.tsx';
 import { KineticProvider } from './context/KineticContext.tsx';
 import Navbar from './components/Navbar.tsx';

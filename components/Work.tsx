@@ -1,6 +1,6 @@
 
-import React, { useRef } from 'react';
-import { motion, useSpring, useTransform, useMotionTemplate, AnimatePresence } from 'motion/react';
+import React, { useRef, useMemo, useId } from 'react';
+import { motion, useSpring, useTransform, useMotionTemplate, AnimatePresence, useInView } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
 import { useRelativeMotion, useKinetic } from '../context/KineticContext.tsx';
@@ -19,16 +19,16 @@ const works: WorkItem[] = [
   { id: '4', title: 'Cybernetic Fauna', category: 'Generative Creature Design', year: '2025', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=800', wide: false }
 ];
 
-const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
+const WorkCardEngine: React.FC<{ item: WorkItem; index: number; cardId: string }> = ({ item, index, cardId }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { velX, velY } = useKinetic();
-  const { relX, relY, isOver } = useRelativeMotion(cardRef);
+  const { relX, relY, isOver } = useRelativeMotion(cardId, cardRef);
   
   const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
     Math.sqrt(Math.pow(vx || 0, 2) + Math.pow(vy || 0, 2))
   );
 
-  const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
+  const springConfig = useMemo(() => ({ damping: 30, stiffness: 200, mass: 0.5 }), []);
   
   const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
   const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
@@ -39,28 +39,31 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   const imageX = useSpring(useTransform(activeX, [0, 1], [-20, 20]), springConfig);
   const imageY = useSpring(useTransform(activeY, [0, 1], [-20, 20]), springConfig);
 
-  const shineX = useTransform(activeX, [0, 1], ["0%", "100%"]);
+  const shineXPercent = useTransform(activeX, [0, 1], ["0%", "100%"]);
   
   const smoothSpeed = useSpring(speed, { damping: 50, stiffness: 200 });
   const shineOpacity = useTransform(smoothSpeed, [0, 2000], [0, 0.3]);
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] as const }}
-      style={{ perspective: 1200 } as any}
-      className={`relative group cursor-pointer ${item.wide ? 'col-span-1 lg:col-span-2' : 'col-span-1'}`}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
+      className="w-full h-full flex flex-col"
     >
       <motion.div
-        style={{ rotateX, rotateY } as any}
-        className="relative overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform"
+        ref={cardRef}
+        style={{ 
+          rotateX, 
+          rotateY, 
+          perspective: 1200,
+          "--sx": shineXPercent
+        } as any}
+        className="relative overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform group"
       >
         <motion.div 
           style={{ 
-            background: useMotionTemplate`radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+            background: `radial-gradient(circle at var(--sx) 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
             opacity: shineOpacity
           } as any}
           className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
@@ -105,9 +108,27 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   );
 };
 
+const WorkCard: React.FC<{ item: WorkItem; index: number }> = (props) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const cardId = useId();
+  const isInView = useInView(scrollRef, { margin: "300px", once: false });
+
+  return (
+    <div
+      ref={scrollRef}
+      className={`relative min-h-[300px] ${props.item.wide ? 'col-span-1 lg:col-span-2' : 'col-span-1'}`}
+    >
+      {isInView ? (
+        <WorkCardEngine {...props} cardId={cardId} />
+      ) : (
+        <div className="w-full aspect-[16/10] bg-surface/50 border border-border/20 rounded-3xl animate-pulse" />
+      )}
+    </div>
+  );
+};
+
 const Work: React.FC = () => {
   const { t, language } = useLanguage();
-  
   const transition = { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const };
 
   return (
@@ -116,34 +137,16 @@ const Work: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-40 border-l-[3px] border-accent pl-12">
           <div className="space-y-10 max-w-5xl">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={language}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={transition}
-              >
-                <span className="text-label-fluid font-bold uppercase tracking-widest-3x text-secondary block">
-                  {t('work.tag')}
-                </span>
-                <h2 className="font-display text-h2-fluid font-medium text-text mt-4">
-                  {t('work.title')}
-                </h2>
+              <motion.div key={language} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={transition}>
+                <span className="text-label-fluid font-bold uppercase tracking-widest-3x text-secondary block">{t('work.tag')}</span>
+                <h2 className="font-display text-h2-fluid font-medium text-text mt-4">{t('work.title')}</h2>
               </motion.div>
             </AnimatePresence>
           </div>
           <div className="mt-16 md:mt-0 text-right">
              <AnimatePresence mode="wait">
-               <motion.div
-                 key={language}
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 transition={{ ...transition, delay: 0.1 }}
-               >
-                 <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">
-                   {t('work.desc')}
-                 </p>
+               <motion.div key={language} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ ...transition, delay: 0.1 }}>
+                 <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">{t('work.desc')}</p>
                  <button className="text-label-fluid uppercase tracking-widest-2x font-bold text-accent border-b-2 border-accent pb-1 hover:opacity-60 transition-opacity">
                    {t('work.viewArchive')}
                  </button>
