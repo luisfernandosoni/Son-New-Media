@@ -32,9 +32,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     restDelta: 0.001 
   };
   
-  // FIX: Removed generics, using any[] for callback args
-  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? Number(rX) : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? Number(rY) : 0.5));
+  // FIX: Strictly typed array destructuring for TS compliance
+  const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
 
   const smoothX = useSpring(activeX, springConfig);
   const smoothY = useSpring(activeY, springConfig);

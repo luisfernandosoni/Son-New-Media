@@ -62,8 +62,8 @@ const SentinelCore = () => {
     return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
   });
 
-  // FIX: Removed generics, using any[] for callback args to bypass strict tuple matching
-  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
+  // FIX: Strictly typed array destructuring for speed calculation
+  const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
     Math.min(Math.sqrt(Math.pow(Number(vx || 0), 2) + Math.pow(Number(vy || 0), 2)) / 15, 1)
   );
 

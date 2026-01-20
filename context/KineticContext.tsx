@@ -65,17 +65,17 @@ export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
     return Math.max(0, Math.min(1, val));
   });
 
-  // FIX: Removed generics, using any[] for callback args
-  const isOver = useTransform([mouseX, mouseY], ([x, y]: any[]) => {
+  // FIX: Explicitly cast return to number to ensure MotionValue<number> type compatibility
+  const isOver = useTransform([mouseX, mouseY], ([x, y]: number[]) => {
     if (!ref.current) return 0;
     const rect = ref.current.getBoundingClientRect();
     const over = (
-      (x as number) >= rect.left &&
-      (x as number) <= rect.right &&
-      (y as number) >= rect.top &&
-      (y as number) <= rect.bottom
+      x >= rect.left &&
+      x <= rect.right &&
+      y >= rect.top &&
+      y <= rect.bottom
     );
-    return over ? 1 : 0;
+    return (over ? 1 : 0) as number;
   });
 
   return { relX, relY, isOver };

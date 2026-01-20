@@ -23,16 +23,16 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   const { velX, velY } = useKinetic();
   const { relX, relY, isOver } = useRelativeMotion(cardRef);
   
-  // FIX: Removed generics, using any[] for callback args
-  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
-    Math.sqrt(Math.pow(Number(vx || 0), 2) + Math.pow(Number(vy || 0), 2))
+  // FIX: Strictly typed array destructuring (number[])
+  const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
+    Math.sqrt(Math.pow(vx || 0, 2) + Math.pow(vy || 0, 2))
   );
 
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
   
-  // FIX: Removed generics, using any[] for callback args
-  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? Number(rX) : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? Number(rY) : 0.5));
+  // FIX: Strictly typed array destructuring (number[])
+  const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
 
   const rotateX = useSpring(useTransform(activeY, [0, 1], [10, -10]), springConfig);
   const rotateY = useSpring(useTransform(activeX, [0, 1], [-10, 10]), springConfig);
