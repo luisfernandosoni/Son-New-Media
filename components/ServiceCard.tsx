@@ -32,8 +32,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     restDelta: 0.001 
   };
   
-  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? rY : 0.5));
+  const activeX = useTransform<number[], number>([isOver, relX], ([over, rX]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform<number[], number>([isOver, relY], ([over, rY]) => (over === 1 ? rY : 0.5));
 
   const smoothX = useSpring(activeX, springConfig);
   const smoothY = useSpring(activeY, springConfig);
@@ -88,14 +88,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       >
         <div 
           className={`absolute inset-0 rounded-[48px] pointer-events-none ${theme.bg}`}
-          style={{ transform: 'translateZ(0px)' }}
+          style={{ transform: 'translateZ(0px)' } as any}
         />
 
         <motion.div 
           style={{ 
-            background: useTransform(
+            background: useTransform<string[], string>(
               [lightX, lightY], 
-              ([lx, ly]: any[]) => isCTA 
+              ([lx, ly]) => isCTA 
                 ? `radial-gradient(800px circle at ${lx} ${ly}, rgba(0,0,0,0.06), transparent 75%)`
                 : `radial-gradient(1000px circle at ${lx} ${ly}, rgba(255,255,255,0.18), transparent 60%)`
             ),
@@ -181,13 +181,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             style={{
               transform: 'translateZ(1px)',
               opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0),
-              maskImage: useTransform(
+              maskImage: useTransform<string[], string>(
                 [lightX, lightY],
-                ([lx, ly]: any[]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
+                ([lx, ly]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
               ),
-              WebkitMaskImage: useTransform(
+              WebkitMaskImage: useTransform<string[], string>(
                 [lightX, lightY],
-                ([lx, ly]: any[]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
+                ([lx, ly]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
               )
             } as any}
           />

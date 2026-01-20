@@ -23,14 +23,14 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   const { velX, velY } = useKinetic();
   const { relX, relY, isOver } = useRelativeMotion(cardRef);
   
-  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
+  const speed = useTransform<number[], number>([velX, velY], ([vx, vy]) => 
     Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2))
   );
 
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
   
-  const activeX = useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? rY : 0.5));
+  const activeX = useTransform<number[], number>([isOver, relX], ([over, rX]) => (over === 1 ? rX : 0.5));
+  const activeY = useTransform<number[], number>([isOver, relY], ([over, rY]) => (over === 1 ? rY : 0.5));
 
   const rotateX = useSpring(useTransform(activeY, [0, 1], [10, -10]), springConfig);
   const rotateY = useSpring(useTransform(activeX, [0, 1], [-10, 10]), springConfig);
@@ -50,7 +50,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      style={{ perspective: 1200 }}
+      style={{ perspective: 1200 } as any}
       className={`relative group cursor-pointer ${item.wide ? 'col-span-1 lg:col-span-2' : 'col-span-1'}`}
     >
       <motion.div

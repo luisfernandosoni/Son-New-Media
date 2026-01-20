@@ -48,10 +48,6 @@ export const useKinetic = () => {
   return context;
 };
 
-/**
- * High-Performance Relative Motion Hook
- * Transforms global pointer coordinates into 0-1 normalized values for a specific element.
- */
 export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
   const { mouseX, mouseY } = useKinetic();
 
@@ -69,8 +65,8 @@ export const useRelativeMotion = (ref: React.RefObject<HTMLElement | null>) => {
     return Math.max(0, Math.min(1, val));
   });
 
-  // Returns 1 if mouse is over, 0 if not (Numeric for TS array consistency)
-  const isOver = useTransform([mouseX, mouseY], ([x, y]: any[]) => {
+  // Explicitly typed as number to satisfy TS arrays
+  const isOver = useTransform<number[], number>([mouseX, mouseY], ([x, y]) => {
     if (!ref.current) return 0;
     const rect = ref.current.getBoundingClientRect();
     const over = (

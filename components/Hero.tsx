@@ -12,7 +12,7 @@ const AnamorphicStreak = () => {
 
   return (
     <motion.div 
-      style={{ x: springX }}
+      style={{ x: springX } as any}
       className="absolute top-1/2 left-0 w-[200%] h-[1px] bg-gradient-to-r from-transparent via-accent/20 to-transparent -translate-y-1/2 pointer-events-none blur-[2px] z-[1]"
     />
   );
@@ -38,7 +38,7 @@ const SentinelRing: React.FC<{
         rotateY: rY,
         translateZ: zDepth,
         opacity: 0.9 - (index * 0.05),
-      }}
+      } as any}
       animate={{ rotate: 360 }}
       transition={{ duration: 25 + index * 3, repeat: Infinity, ease: "linear" }}
       className="absolute border border-accent/80 dark:border-accent/30 rounded-full"
@@ -62,7 +62,7 @@ const SentinelCore = () => {
     return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
   });
 
-  const speed = useTransform([velX, velY], ([vx, vy]: any[]) => 
+  const speed = useTransform<number[], number>([velX, velY], ([vx, vy]) => 
     Math.min(Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2)) / 15, 1)
   );
 
@@ -82,7 +82,7 @@ const SentinelCore = () => {
             initial={{ y: "-20%" }}
             animate={{ y: "120%" }}
             transition={{ duration: 6 + i, repeat: Infinity, ease: "linear", delay: i * 0.5 }}
-            style={{ left: `${(i + 1) * 10}%`, width: '1px' }}
+            style={{ left: `${(i + 1) * 10}%`, width: '1px' } as any}
             className="absolute h-32 bg-gradient-to-b from-transparent via-accent to-transparent"
           />
         ))}
@@ -93,7 +93,7 @@ const SentinelCore = () => {
         ))}
         <motion.div style={{ translateZ: 100, scale: useTransform(speed, [0, 1], [1, 0.85]), transformStyle: "preserve-3d" } as any} className="relative z-50">
           <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-[0_0_60px_rgba(var(--accent-rgb),0.5)]">
-            <motion.div style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.12) }} className="w-3.5 h-3.5 rounded-full bg-background" />
+            <motion.div style={{ scale: useTransform(time, (t: number) => 0.4 + Math.sin(t / 600) * 0.12) } as any} className="w-3.5 h-3.5 rounded-full bg-background" />
           </div>
           <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.1, 0.2] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 -m-8 bg-accent/20 blur-2xl rounded-full -z-10" />
         </motion.div>
