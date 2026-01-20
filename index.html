@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
   <head>
@@ -31,12 +32,9 @@
               display: ["Space Grotesk", "sans-serif"],
             },
             fontSize: {
-              // Master Modular Scale (2026 Core)
               'nano': ['clamp(0.81rem, 0.6vw, 0.88rem)', { lineHeight: '1.4', letterSpacing: '0.12em' }],
               'body-fluid': ['clamp(1.06rem, 1.2vw, 1.2rem)', { lineHeight: '1.62', letterSpacing: '-0.01em' }],
               'label-fluid': ['clamp(0.85rem, 0.7vw, 0.95rem)', { lineHeight: '1.2', letterSpacing: '0.2em' }],
-              
-              // Unified Header Scales
               'h1-fluid': ['clamp(3.5rem, 10vw, 7.5rem)', { lineHeight: '0.9', letterSpacing: '-0.05em' }],
               'h2-fluid': ['clamp(3rem, 7.5vw, 6.5rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
               'h3-fluid': ['clamp(1.75rem, 3.5vw, 2.5rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
@@ -55,9 +53,6 @@
         --background: #050505;
         --accent: #FFFFFF;
         --accent-rgb: 255, 255, 255;
-        --mouse-x: 0px;
-        --mouse-y: 0px;
-        --cursor-aura-weight: 1px;
       }
       html, body {
         background-color: var(--background);
@@ -76,13 +71,6 @@
         background-image: url("https://grainy-gradients.vercel.app/noise.svg");
       }
     </style>
-    <script type="module">
-      const root = document.documentElement;
-      window.addEventListener('pointermove', (e) => {
-        root.style.setProperty('--mouse-x', `${e.clientX}px`);
-        root.style.setProperty('--mouse-y', `${e.clientY}px`);
-      }, { passive: true });
-    </script>
   <script type="importmap">
 {
   "imports": {

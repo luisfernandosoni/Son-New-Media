@@ -1,38 +1,18 @@
 
-/* 
- * RULES SUMMARY:
- * 1. Focus on one core task per sprint.
- * 2. Maintain SV Top 10 VP/Senior standard.
- * 3. Use bleeding-edge technology/design.
- * 4. Strive for Apple-level aesthetic perfection.
- * 5. No unsolicited changes.
- * 6. Inform and explain work.
- * 7. Leverage Cloudflare 2026 Ecosystem.
- * 8. Always start by summarizing rules.
- */
-
 import React, { useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useAnimationFrame, useVelocity, useTime, MotionValue } from 'framer-motion';
+import { motion, AnimatePresence, useSpring, useTransform, useTime } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext.tsx';
+import { useKinetic } from '../context/KineticContext.tsx';
 import { Magnetic } from './Magnetic.tsx';
 
 const AnamorphicStreak = () => {
-  const mouseX = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const xTransform = useTransform(springX, [0, 1], ["-20%", "20%"]);
-
-  useAnimationFrame(() => {
-    const root = document.documentElement;
-    const mxVal = root.style.getPropertyValue('--mouse-x');
-    if (mxVal) {
-      const mx = parseFloat(mxVal) / window.innerWidth;
-      mouseX.set(mx);
-    }
-  });
+  const { mouseX } = useKinetic();
+  const xTransform = useTransform(mouseX, [0, window.innerWidth], ["-20%", "20%"]);
+  const springX = useSpring(xTransform, { stiffness: 40, damping: 20 });
 
   return (
     <motion.div 
-      style={{ x: xTransform }}
+      style={{ x: springX }}
       className="absolute top-1/2 left-0 w-[200%] h-[1px] bg-gradient-to-r from-transparent via-accent/20 to-transparent -translate-y-1/2 pointer-events-none blur-[2px] z-[1]"
     />
   );
@@ -40,12 +20,12 @@ const AnamorphicStreak = () => {
 
 const SentinelRing: React.FC<{ 
   index: number; 
-  mouseX: MotionValue<number>; 
-  mouseY: MotionValue<number>; 
-}> = ({ index, mouseX, mouseY }) => {
+  relX: motion.MotionValue<number>; 
+  relY: motion.MotionValue<number>; 
+}> = ({ index, relX, relY }) => {
   const zDepth = index * -30;
-  const ringSpringX = useSpring(mouseX, { stiffness: 60 - index * 3, damping: 25 + index });
-  const ringSpringY = useSpring(mouseY, { stiffness: 60 - index * 3, damping: 25 + index });
+  const ringSpringX = useSpring(relX, { stiffness: 60 - index * 3, damping: 25 + index });
+  const ringSpringY = useSpring(relY, { stiffness: 60 - index * 3, damping: 25 + index });
   const rX = useTransform(ringSpringY, [-1, 1], [45, -45]);
   const rY = useTransform(ringSpringX, [-1, 1], [-45, 45]);
 
@@ -68,29 +48,27 @@ const SentinelRing: React.FC<{
 
 const SentinelCore = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { mouseX, mouseY, velX, velY } = useKinetic();
   const time = useTime();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const xVelocity = useVelocity(mouseX);
-  const yVelocity = useVelocity(mouseY);
-  const combinedVelocity = useTransform([xVelocity, yVelocity], ([vx, vy]) => 
+
+  // Normalized relative coordinates for internal parallax
+  const relX = useTransform(mouseX, (x) => {
+    if (!containerRef.current) return 0;
+    const rect = containerRef.current.getBoundingClientRect();
+    return (x - (rect.left + rect.width / 2)) / (rect.width / 2);
+  });
+  const relY = useTransform(mouseY, (y) => {
+    if (!containerRef.current) return 0;
+    const rect = containerRef.current.getBoundingClientRect();
+    return (y - (rect.top + rect.height / 2)) / (rect.height / 2);
+  });
+
+  const speed = useTransform([velX, velY], ([vx, vy]) => 
     Math.min(Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2)) / 15, 1)
   );
-  const springX = useSpring(mouseX, { stiffness: 45, damping: 35 });
-  const springY = useSpring(mouseY, { stiffness: 45, damping: 35 });
 
-  useAnimationFrame(() => {
-    const root = document.documentElement;
-    const mx = parseFloat(root.style.getPropertyValue('--mouse-x'));
-    const my = parseFloat(root.style.getPropertyValue('--mouse-y'));
-    if (containerRef.current && !isNaN(mx)) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const relX = (mx - (rect.left + rect.width / 2)) / (rect.width / 2);
-      const relY = (my - (rect.top + rect.height / 2)) / (rect.height / 2);
-      mouseX.set(relX);
-      mouseY.set(relY);
-    }
-  });
+  const springX = useSpring(relX, { stiffness: 45, damping: 35 });
+  const springY = useSpring(relY, { stiffness: 45, damping: 35 });
 
   const rings = useMemo(() => Array.from({ length: 12 }), []);
   const rotateX = useTransform(springY, [-1, 1], [35, -35]);
@@ -112,9 +90,9 @@ const SentinelCore = () => {
       </div>
       <motion.div style={{ rotateX, rotateY, transformStyle: "preserve-3d" }} className="relative w-full h-full flex items-center justify-center">
         {rings.map((_, i) => (
-          <SentinelRing key={i} index={i} mouseX={mouseX} mouseY={mouseY} />
+          <SentinelRing key={i} index={i} relX={relX} relY={relY} />
         ))}
-        <motion.div style={{ translateZ: 100, scale: useTransform(combinedVelocity, [0, 1], [1, 0.85]), transformStyle: "preserve-3d" }} className="relative z-50">
+        <motion.div style={{ translateZ: 100, scale: useTransform(speed, [0, 1], [1, 0.85]), transformStyle: "preserve-3d" }} className="relative z-50">
           <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-[0_0_60px_rgba(var(--accent-rgb),0.5)]">
             <motion.div style={{ scale: useTransform(time, t => 0.4 + Math.sin(t / 600) * 0.12) }} className="w-3.5 h-3.5 rounded-full bg-background" />
           </div>
@@ -125,14 +103,14 @@ const SentinelCore = () => {
         <div className="flex justify-between items-start opacity-70">
           <div className="space-y-1.5">
             <p className="text-nano uppercase tracking-widest-2x font-semibold text-accent italic">Status // Operational</p>
-            <p className="text-nano font-mono text-accent/90 uppercase">X-RAY_KINETIC_ALPHA</p>
+            <p className="text-nano font-mono text-accent/90 uppercase">KINETIC_SYNC_v2</p>
           </div>
-          <div className="text-nano font-mono text-accent text-right uppercase">UPTIME: 0.9999</div>
+          <div className="text-nano font-mono text-accent text-right uppercase">LATENCY: 0.00ms</div>
         </div>
         <div className="w-full flex justify-between items-end">
           <div className="bg-accent/5 backdrop-blur-md border border-accent/10 px-6 py-4 rounded-xl overflow-hidden relative transition-colors hover:bg-accent/10">
             <p className="text-nano uppercase tracking-widest-2x text-accent/50 mb-1.5 font-bold">Kinetic_Drive</p>
-            <h3 className="text-accent/95 font-display text-base font-medium tracking-tight uppercase">Sentinel_VII</h3>
+            <h3 className="text-accent/95 font-display text-base font-medium tracking-tight uppercase">Sentinel_Sync</h3>
           </div>
           <div className="flex gap-2 items-end h-4">
             {Array.from({ length: 6 }).map((_, i) => (

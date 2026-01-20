@@ -1,6 +1,7 @@
 
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useAnimationFrame } from 'framer-motion';
+import { motion, useSpring, useTransform } from 'framer-motion';
+import { useKinetic } from '../context/KineticContext.tsx';
 
 interface MagneticProps {
   children: React.ReactNode;
@@ -16,45 +17,35 @@ export const Magnetic: React.FC<MagneticProps> = ({
   className = "" 
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { mouseX, mouseY } = useKinetic();
   
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
   const springConfig = { damping: 25, stiffness: 200, mass: 0.6 };
-  const springX = useSpring(x, springConfig);
-  const springY = useSpring(y, springConfig);
 
-  useAnimationFrame(() => {
-    if (!ref.current) return;
-
+  // Reactive distance-based magnetism
+  const magneticValues = useTransform([mouseX, mouseY], ([mx, my]) => {
+    if (!ref.current) return { x: 0, y: 0 };
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-
-    const root = document.documentElement;
-    const mxVal = root.style.getPropertyValue('--mouse-x');
-    const myVal = root.style.getPropertyValue('--mouse-y');
-
-    if (!mxVal || !myVal) return;
+    const deltaX = (mx as number) - centerX;
+    const deltaY = (my as number) - centerY;
+    const dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     
-    const mx = parseFloat(mxVal);
-    const my = parseFloat(myVal);
-
-    if (isNaN(mx) || isNaN(my)) return;
-
-    const deltaX = mx - centerX;
-    const deltaY = my - centerY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    if (distance < radius) {
-      const power = (1 - distance / radius);
-      x.set(deltaX * strength * power);
-      y.set(deltaY * strength * power);
-    } else {
-      x.set(0);
-      y.set(0);
+    if (dist < radius) {
+      const power = (1 - dist / radius);
+      return {
+        x: deltaX * strength * power,
+        y: deltaY * strength * power
+      };
     }
+    return { x: 0, y: 0 };
   });
+
+  const magneticX = useTransform(magneticValues, (v) => v.x);
+  const magneticY = useTransform(magneticValues, (v) => v.y);
+
+  const springX = useSpring(magneticX, springConfig);
+  const springY = useSpring(magneticY, springConfig);
 
   return (
     <motion.div

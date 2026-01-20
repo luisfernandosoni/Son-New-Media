@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { LanguageProvider } from './context/LanguageContext.tsx';
+import { KineticProvider } from './context/KineticContext.tsx';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import Services from './components/Services.tsx';
@@ -13,18 +14,20 @@ import { CustomCursor } from './components/CustomCursor.tsx';
 const App: React.FC = () => {
   return (
     <LanguageProvider>
-      <div className="relative w-full min-h-screen bg-background text-text selection:bg-accent selection:text-background transition-colors duration-500 overflow-x-hidden">
-        <CustomCursor />
-        <Navbar />
-        <main>
-          <Hero />
-          <Services />
-          <Work />
-          <About />
-          <DesignPhilosophy />
-        </main>
-        <Footer />
-      </div>
+      <KineticProvider>
+        <div className="relative w-full min-h-screen bg-background text-text selection:bg-accent selection:text-background transition-colors duration-500 overflow-x-hidden">
+          <CustomCursor />
+          <Navbar />
+          <main>
+            <Hero />
+            <Services />
+            <Work />
+            <About />
+            <DesignPhilosophy />
+          </main>
+          <Footer />
+        </div>
+      </KineticProvider>
     </LanguageProvider>
   );
 };

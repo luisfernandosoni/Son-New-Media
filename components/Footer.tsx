@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { Logo } from './Logo.tsx';
@@ -14,16 +15,16 @@ const Footer: React.FC = () => {
               {t('footer.cta')}
             </h2>
             <a 
-              href="mailto:hello@soninewmedia.com" 
+              href={`mailto:${t('footer.email')}`}
               className="inline-flex items-center text-h3-fluid font-light border-b-2 border-text/15 pb-3 hover:text-text hover:border-text transition-all text-secondary"
             >
-              hello@soninewmedia.com
+              {t('footer.email')}
             </a>
           </div>
           
           <div className="grid grid-cols-2 gap-x-32 gap-y-16 w-full lg:w-auto">
             <div>
-              <h4 className="font-bold text-label-fluid uppercase tracking-widest-2x text-secondary mb-10">Sitemap</h4>
+              <h4 className="font-bold text-label-fluid uppercase tracking-widest-2x text-secondary mb-10">{t('footer.sitemap')}</h4>
               <ul className="space-y-6 text-body-fluid text-secondary/80">
                 {['services', 'work', 'about'].map(item => (
                   <li key={item}>
@@ -33,7 +34,7 @@ const Footer: React.FC = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-label-fluid uppercase tracking-widest-2x text-secondary mb-10">Socials</h4>
+              <h4 className="font-bold text-label-fluid uppercase tracking-widest-2x text-secondary mb-10">{t('footer.socials')}</h4>
               <ul className="space-y-6 text-body-fluid text-secondary/80">
                 {['Instagram', 'LinkedIn', 'Twitter (X)'].map(item => (
                   <li key={item}>
@@ -48,7 +49,7 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-border text-nano text-secondary/50">
           <div className="flex items-center gap-8 mb-8 md:mb-0">
             <Logo size={32} className="opacity-40 grayscale brightness-200 hover:opacity-100 hover:grayscale-0 transition-all duration-500" />
-            <span className="font-medium tracking-wide">© 2026 Soní New Media.</span>
+            <span className="font-medium tracking-wide">{t('footer.copyright')}</span>
           </div>
           <div className="flex gap-12 font-medium">
             <a href="#" className="hover:text-text transition-colors tracking-widest uppercase">{t('footer.privacy')}</a>

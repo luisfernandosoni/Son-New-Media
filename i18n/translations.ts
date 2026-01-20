@@ -33,7 +33,9 @@ export const translations = {
     },
     work: {
       tag: 'The Archive',
-      title: 'Cinematic Artifacts.'
+      title: 'Cinematic Artifacts.',
+      desc: 'Curating the intersection of Cine Híbrido and sovereign machine intelligence.',
+      viewArchive: 'View Full Archive'
     },
     about: {
       tag: 'The Sovereignty',
@@ -47,11 +49,14 @@ export const translations = {
     },
     footer: {
       cta: 'Ready to automate the future?',
+      email: 'hello@soninewmedia.com',
+      sitemap: 'Sitemap',
+      socials: 'Socials',
+      copyright: '© 2026 Soní New Media.',
       privacy: 'Privacy Policy',
       terms: 'Terms of Service'
     }
   },
-  translations_placeholder: "The object below is the Spanish version of the translations.",
   es: {
     nav: {
       services: 'Servicios',
@@ -85,7 +90,9 @@ export const translations = {
     },
     work: {
       tag: 'El Archivo',
-      title: 'Esculturas Digitales.'
+      title: 'Artefactos Cinemáticos.',
+      desc: 'Curando la intersección del Cine Híbrido y la inteligencia de máquinas soberana.',
+      viewArchive: 'Ver Archivo Completo'
     },
     about: {
       tag: 'La Soberanía',
@@ -99,6 +106,10 @@ export const translations = {
     },
     footer: {
       cta: '¿Listo para automatizar el futuro?',
+      email: 'hello@soninewmedia.com',
+      sitemap: 'Mapa del Sitio',
+      socials: 'Sociales',
+      copyright: '© 2026 Soní New Media.',
       privacy: 'Política de Privacidad',
       terms: 'Términos de Servicio'
     }

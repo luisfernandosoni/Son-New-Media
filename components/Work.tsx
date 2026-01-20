@@ -1,20 +1,9 @@
 
-/* 
- * RULES SUMMARY:
- * 1. Focus on one core task per sprint.
- * 2. Maintain SV Top 10 VP/Senior standard.
- * 3. Use bleeding-edge technology/design.
- * 4. Strive for Apple-level aesthetic perfection.
- * 5. No unsolicited changes.
- * 6. Inform and explain work.
- * 7. Leverage Cloudflare 2026 Ecosystem.
- * 8. Always start by summarizing rules.
- */
-
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
+import { motion, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
+import { useRelativeMotion, useKinetic } from '../context/KineticContext.tsx';
 
 const works: WorkItem[] = [
   { 
@@ -31,47 +20,33 @@ const works: WorkItem[] = [
 
 const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const { velX, velY } = useKinetic();
+  const { relX, relY, isOver } = useRelativeMotion(cardRef);
   
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const xVelocity = useVelocity(mouseX);
-  const yVelocity = useVelocity(mouseY);
-  const speed = useTransform([xVelocity, yVelocity], ([vx, vy]) => 
+  const speed = useTransform([velX, velY], ([vx, vy]) => 
     Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2))
   );
 
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), springConfig);
   
-  const imageX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-20, 20]), springConfig);
-  const imageY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-20, 20]), springConfig);
+  // Decoupled Hover State Logic - FIXED
+  const activeX = useTransform([isOver, relX], ([over, rX]) => (over ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]) => (over ? rY : 0.5));
 
-  const shineX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
+  const rotateX = useSpring(useTransform(activeY, [0, 1], [10, -10]), springConfig);
+  const rotateY = useSpring(useTransform(activeX, [0, 1], [-10, 10]), springConfig);
+  
+  const imageX = useSpring(useTransform(activeX, [0, 1], [-20, 20]), springConfig);
+  const imageY = useSpring(useTransform(activeY, [0, 1], [-20, 20]), springConfig);
+
+  const shineX = useTransform(activeX, [0, 1], ["0%", "100%"]);
   
   const smoothSpeed = useSpring(speed, { damping: 50, stiffness: 200 });
   const shineOpacity = useTransform(smoothSpeed, [0, 2000], [0, 0.3]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   return (
     <motion.div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -85,7 +60,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
       >
         <motion.div 
           style={{ 
-            background: `radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+            background: useMotionTemplate`radial-gradient(circle at ${shineX} 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
             opacity: shineOpacity
           }}
           className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
@@ -99,7 +74,10 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
             className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-out"
           />
           
-          <div className="absolute inset-0 z-10 p-10 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+          <motion.div 
+            style={{ opacity: useTransform(isOver, over => over ? 1 : 0) }}
+            className="absolute inset-0 z-10 p-10 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60 transition-opacity duration-700"
+          >
             <div className="flex justify-between items-start">
               <span className="text-nano font-bold tracking-widest-2x text-white uppercase opacity-70">Archive_{item.year}</span>
               <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md">
@@ -111,7 +89,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
               <h3 className="text-white font-display text-h3-fluid font-medium">{item.title}</h3>
               <p className="text-white/70 text-body-fluid font-light max-w-xs">{item.category}</p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -147,10 +125,10 @@ const Work: React.FC = () => {
           </div>
           <div className="mt-16 md:mt-0 text-right">
              <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">
-               Curating the intersection of Cine Híbrido and sovereign machine intelligence.
+               {t('work.desc')}
              </p>
              <button className="text-label-fluid uppercase tracking-widest-2x font-bold text-accent border-b-2 border-accent pb-1 hover:opacity-60 transition-opacity">
-               View Full Archive
+               {t('work.viewArchive')}
              </button>
           </div>
         </div>

@@ -1,18 +1,8 @@
-/* 
- * RULES SUMMARY:
- * 1. Focus on one core task per sprint.
- * 2. Maintain SV Top 10 VP/Senior standard.
- * 3. Use bleeding-edge technology/design.
- * 4. Strive for Apple-level aesthetic perfection.
- * 5. No unsolicited changes.
- * 6. Inform and explain work.
- * 7. Leverage Cloudflare 2026 Ecosystem.
- * 8. Always start by summarizing rules.
- */
 
 import React, { useRef } from 'react';
-import { motion, useTime, useTransform, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion';
+import { motion, useTime, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
 import { ServiceItem } from '../types.ts';
+import { useRelativeMotion } from '../context/KineticContext.tsx';
 
 interface ServiceCardProps {
   item?: ServiceItem;
@@ -33,16 +23,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const time = useTime();
+  const { relX, relY, isOver } = useRelativeMotion(containerRef);
 
   // 1. Intelligence: High-Fidelity Physics Engine
-  const mouseX = useMotionValue(0.5); 
-  const mouseY = useMotionValue(0.5); 
-
-  /**
-   * SV SENIOR STANDARD: Inertial Spring Configuration
-   * We increase 'mass' to 1.2 to simulate physical weight.
-   * We increase 'damping' to 35 for a "luxury car suspension" settle.
-   */
   const springConfig = { 
     stiffness: 180, 
     damping: 35, 
@@ -50,16 +33,18 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     restDelta: 0.001 
   };
   
-  const smoothX = useSpring(mouseX, springConfig);
-  const smoothY = useSpring(mouseY, springConfig);
+  // Decoupled Hover State: Smoothly interpolate between active and neutral - FIXED
+  const activeX = useTransform([isOver, relX], ([over, rX]) => (over ? rX : 0.5));
+  const activeY = useTransform([isOver, relY], ([over, rY]) => (over ? rY : 0.5));
 
-  // 2. Geometry: Sophisticated 10-degree Weighted Rotation
-  // Slightly reduced max tilt (10deg) for a more professional, "less aggressive" feel
+  const smoothX = useSpring(activeX, springConfig);
+  const smoothY = useSpring(activeY, springConfig);
+
+  // 2. Geometry: Sophisticated Rotation
   const rotateX = useTransform(smoothY, [0, 1], [10, -10]);
   const rotateY = useTransform(smoothX, [0, 1], [-10, 10]);
   
-  // 3. MULTI-PLANAR DEPTH: Reactive Parallax
-  // Refined offsets for Tiered Motion to ensure the "3DS effect" remains clear but elegant
+  // 3. Multi-Planar Depth: Reactive Parallax
   const tier1X = useTransform(smoothX, [0, 1], [20, -20]);
   const tier1Y = useTransform(smoothY, [0, 1], [20, -20]);
   
@@ -69,32 +54,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const tier3X = useTransform(smoothX, [0, 1], [5, -5]);
   const tier3Y = useTransform(smoothY, [0, 1], [5, -5]);
 
-  // Subtle organic breathing (micro-interaction)
+  // Subtle organic breathing
   const idleBreathe = useTransform(time, t => 1 + Math.sin((t + index * 500) / 4000) * 0.003);
-  
   const transform = useMotionTemplate`rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${idleBreathe})`;
 
   // 4. Light: Specular Tracking
   const lightX = useTransform(smoothX, [0, 1], ["0%", "100%"]);
   const lightY = useTransform(smoothY, [0, 1], ["0%", "100%"]);
-
-  const handleMouseMove = (e: React.MouseEvent | React.PointerEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    // Normalize mouse position (-1 to 1 for more natural calculation)
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    
-    mouseX.set(px);
-    mouseY.set(py);
-  };
-
-  const handleMouseLeave = () => {
-    // Return to neutral with a soft bounce
-    mouseX.set(0.5);
-    mouseY.set(0.5);
-  };
 
   const theme = isCTA ? {
     container: "text-black",
@@ -111,10 +77,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative h-[540px] cursor-none group"
-      style={{ perspective: 2000 }} // Increased perspective for smoother depth perception
+      className="relative h-[540px] group"
+      style={{ perspective: 2000 }}
     >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -128,13 +92,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         }}
         className={`relative w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col overflow-visible ${theme.container} ${theme.shadow} transition-shadow duration-700`}
       >
-        {/* BASE GLASS LAYER */}
         <div 
           className={`absolute inset-0 rounded-[48px] pointer-events-none ${theme.bg}`}
           style={{ transform: 'translateZ(0px)' }}
         />
 
-        {/* SPECULAR LIGHTING - DYNAMIC CUSHION */}
+        {/* SPECULAR LIGHTING */}
         <motion.div 
           style={{ 
             background: useTransform(
@@ -144,19 +107,18 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 : `radial-gradient(1000px circle at ${lx} ${ly}, rgba(255,255,255,0.18), transparent 60%)`
             ),
             transform: 'translateZ(10px)',
-            mixBlendMode: isCTA ? 'multiply' : 'overlay'
+            mixBlendMode: isCTA ? 'multiply' : 'overlay',
+            opacity: useTransform(isOver, (over) => over ? 1 : 0)
           }}
-          className="absolute inset-0 z-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[48px]"
+          className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 rounded-[48px]"
         />
 
         {/* PARALLAX CONTENT STACK */}
-        
-        {/* TIER 1: ICON & NUMBER (MAX MOTION) */}
         <motion.div 
           style={{ 
             x: tier1X, 
             y: tier1Y, 
-            translateZ: 100, // Elevated for deeper 3DS effect
+            translateZ: 100,
             transformStyle: 'preserve-3d'
           }}
           className="flex justify-between items-start relative z-10 h-24 lg:h-32 mb-6 pointer-events-none"
@@ -177,7 +139,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           </span>
         </motion.div>
 
-        {/* TIER 2: TITLE (MEDIUM MOTION) */}
         <motion.div 
           style={{ 
             x: tier2X, 
@@ -193,7 +154,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             </h3>
           </div>
           
-          {/* TIER 3: DESCRIPTION (LOW MOTION) */}
           <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 30 }}>
             <p className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light ${theme.subtext} ${isCTA ? 'px-4 opacity-80' : 'group-hover:text-white/90'}`}>
               {isCTA ? ctaDesc : item?.description}
@@ -201,7 +161,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           </motion.div>
         </motion.div>
 
-        {/* ACTION LAYER (MAX DEPTH) */}
         {isCTA && (
           <motion.div 
             style={{ translateZ: 140, x: tier1X, y: tier1Y }}
@@ -227,9 +186,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* KINETIC BORDER GLOW */}
         {!isCTA && (
           <motion.div 
-            className="absolute inset-0 border-[2px] border-white/30 rounded-[48px] pointer-events-none opacity-0 group-hover:opacity-100"
+            className="absolute inset-0 border-[2px] border-white/30 rounded-[48px] pointer-events-none"
             style={{
               transform: 'translateZ(1px)',
+              opacity: useTransform(isOver, (over) => over ? 1 : 0),
               maskImage: useTransform(
                 [lightX, lightY],
                 ([lx, ly]) => `radial-gradient(500px circle at ${lx} ${ly}, black, transparent 90%)`
