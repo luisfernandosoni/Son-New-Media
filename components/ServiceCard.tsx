@@ -1,8 +1,9 @@
 
 import React, { useRef } from 'react';
-import { motion, useTime, useTransform, useSpring, useMotionTemplate } from 'motion/react';
+import { motion, useTime, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'motion/react';
 import { ServiceItem } from '../types.ts';
 import { useRelativeMotion } from '../context/KineticContext.tsx';
+import { useLanguage } from '../context/LanguageContext.tsx';
 
 interface ServiceCardProps {
   item?: ServiceItem;
@@ -24,6 +25,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const time = useTime();
   const { relX, relY, isOver } = useRelativeMotion(containerRef);
+  const { language } = useLanguage();
 
   const springConfig = { 
     stiffness: 180, 
@@ -32,7 +34,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     restDelta: 0.001 
   };
   
-  // FIX: Strictly typed array destructuring for TS compliance
   const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
   const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
 
@@ -69,6 +70,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     shadow: "hover:shadow-[0_50px_120px_rgba(0,0,0,0.5)]"
   };
 
+  const textVariant = {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 }
+  };
+  
+  const textTransition = { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const };
+
   return (
     <div
       ref={containerRef}
@@ -79,13 +88,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 1.2, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.2, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] as const }}
         style={{ 
           transform,
           transformStyle: 'preserve-3d',
           willChange: 'transform'
         } as any}
-        className={`relative w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col overflow-visible ${theme.container} ${theme.shadow} transition-shadow duration-700`}
+        className={`relative w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col ${theme.container} ${theme.shadow} transition-shadow duration-700`}
       >
         <div 
           className={`absolute inset-0 rounded-[48px] pointer-events-none ${theme.bg}`}
@@ -141,16 +150,30 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           } as any}
           className={`relative z-10 flex-grow flex flex-col pointer-events-none ${isCTA ? 'items-center text-center' : ''}`}
         >
-          <div className="min-h-[2.5em] lg:min-h-[2.2em] mb-6 w-full">
-            <h3 className="text-card-title-fluid font-display font-medium leading-[1.1] tracking-tight">
-              {isCTA ? ctaTitle : item?.title}
-            </h3>
+          <div className="min-h-[2.5em] lg:min-h-[2.2em] mb-6 w-full relative">
+            <AnimatePresence mode="wait">
+              <motion.h3 
+                key={language}
+                {...textVariant}
+                transition={textTransition}
+                className="text-card-title-fluid font-display font-medium leading-[1.1] tracking-tight w-full"
+              >
+                {isCTA ? ctaTitle : item?.title}
+              </motion.h3>
+            </AnimatePresence>
           </div>
           
-          <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 30 } as any}>
-            <p className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light ${theme.subtext} ${isCTA ? 'px-4 opacity-80' : 'group-hover:text-white/90'}`}>
-              {isCTA ? ctaDesc : item?.description}
-            </p>
+          <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 30 } as any} className="relative min-h-[4em]">
+            <AnimatePresence mode="wait">
+              <motion.p 
+                key={language}
+                {...textVariant}
+                transition={{ ...textTransition, delay: 0.1 }}
+                className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light w-full ${theme.subtext} ${isCTA ? 'px-4 opacity-80' : 'group-hover:text-white/90'}`}
+              >
+                {isCTA ? ctaDesc : item?.description}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
 
@@ -164,7 +187,18 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               whileTap={{ scale: 0.95 }}
               className="inline-flex items-center gap-5 bg-black text-white px-12 py-6 rounded-full transition-all duration-700 shadow-[0_30px_60px_rgba(0,0,0,0.3)] group/btn cursor-pointer pointer-events-auto"
             >
-              <span className="uppercase tracking-widest-2x text-label-fluid font-bold">{ctaBtn}</span>
+              <AnimatePresence mode="wait">
+                <motion.span 
+                  key={language}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={textTransition}
+                  className="uppercase tracking-widest-2x text-label-fluid font-bold block"
+                >
+                  {ctaBtn}
+                </motion.span>
+              </AnimatePresence>
               <motion.span 
                 animate={{ y: [0, -4, 0] }}
                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}

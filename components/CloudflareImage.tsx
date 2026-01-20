@@ -56,7 +56,7 @@ export const CloudflareImage: React.FC<CloudflareImageProps> = ({
           opacity: status === 'loaded' ? 1 : 0, 
           scale: status === 'loaded' ? 1 : 1.05,
         }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
         onLoad={() => setStatus('loaded')}
         onError={() => setStatus('error')}
         loading={priority ? "eager" : "lazy"}

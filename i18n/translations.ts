@@ -4,7 +4,7 @@ export const translations = {
     nav: {
       services: 'Services',
       work: 'Archive',
-      about: 'Studio',
+      about: 'About us',
       contact: 'Access'
     },
     hero: {
@@ -17,8 +17,8 @@ export const translations = {
       reel: 'Cinematic Reel'
     },
     services: {
-      tag: 'Capabilities',
-      title: 'Our Intelligence.',
+      tag: 'Core Intelligence',
+      title: 'Neural Capabilities.',
       desc: 'Bridging the gap between artistic direction and computational efficiency.',
       items: [
         { id: '1', number: '01', icon: 'movie_filter', title: 'Hybrid Cinema', description: 'Merging raw cinematography with real-time neural engines to architect hyper-real cinematic worlds that redefine the visual frontier.' },
@@ -32,13 +32,13 @@ export const translations = {
       cta: 'Request Access'
     },
     work: {
-      tag: 'The Archive',
+      tag: 'Neural Repository',
       title: 'Cinematic Artifacts.',
       desc: 'Curating the intersection of Cine Híbrido and sovereign machine intelligence.',
       viewArchive: 'View Full Archive'
     },
     about: {
-      tag: 'The Sovereignty',
+      tag: 'About us',
       title: 'Architecting the Post-Human Creative Era.',
       desc: 'Soni New Media is a specialized intelligence cell operating at the intersection of cinema and computation. We don\'t just use tools; we build proprietary cognitive frameworks that redefine what media can be.',
       manifesto: 'Our mission is to replace traditional production friction with automated elegance. We believe that in 2026, the only differentiator left is the intensity of the human vision combined with the precision of sovereign AI.'
@@ -61,7 +61,7 @@ export const translations = {
     nav: {
       services: 'Servicios',
       work: 'Archivo',
-      about: 'Estudio',
+      about: 'Sobre nosotros',
       contact: 'Acceso'
     },
     hero: {
@@ -74,8 +74,8 @@ export const translations = {
       reel: 'Reel Cine'
     },
     services: {
-      tag: 'Capacidades',
-      title: 'Nuestra Inteligencia.',
+      tag: 'Inteligencia Núcleo',
+      title: 'Capacidades Neurales.',
       desc: 'Cerramos la brecha entre la dirección artística y la eficiencia computacional.',
       items: [
         { id: '1', number: '01', icon: 'movie_filter', title: 'Cine Híbrido', description: 'Fusionando cinematografía raw con motores neurales en tiempo real para arquitectar mundos hiperreales que redefinen la frontera visual.' },
@@ -89,25 +89,25 @@ export const translations = {
       cta: 'Solicitar Acceso'
     },
     work: {
-      tag: 'El Archivo',
-      title: 'Artefactos Cinemáticos.',
-      desc: 'Curando la intersección del Cine Híbrido y la inteligencia de máquinas soberana.',
+      tag: 'Repositorio Neural',
+      title: 'Artefactos Cinematográficos.',
+      desc: 'Curaduría en la intersección del Cine Híbrido y la inteligencia de máquinas soberana.',
       viewArchive: 'Ver Archivo Completo'
     },
     about: {
-      tag: 'La Soberanía',
+      tag: 'Sobre nosotros',
       title: 'Arquitectando la Era Creativa Post-Humana.',
-      desc: 'Soni New Media es una célula de inteligencia especializada que opera en la intersección del cine y la computación. No solo usamos herramientas; construimos marcos cognitivos propietarios que redefinen lo que los medios pueden ser.',
+      desc: 'Soní New Media es una célula de inteligencia especializada que opera en la intersección del cine y la computación. No solo usamos herramientas; construimos marcos cognitivos propietarios que redefinen lo que los medios pueden ser.',
       manifesto: 'Nuestra misión es reemplazar la fricción de producción tradicional con elegancia automatizada. Creemos que en 2026, el único diferenciador que queda es la intensidad de la visión humana combinada con la precisión de la IA soberana.'
     },
     philosophy: {
       tag: 'Filosofía de Diseño',
-      quote: '"La simplicidad no es la ausencia de desorden, eso es una consecuencia de la simplicidad. La simplicidad describe de algún modo esencial el propósito y lugar de un objeto."'
+      quote: '"La simplicidad no es la ausencia de desorden, eso es una consecuencia de la simplicidad. La simplicidad es de alguna manera describir esencialmente el propósito y el lugar de un objeto y producto."'
     },
     footer: {
       cta: '¿Listo para automatizar el futuro?',
       email: 'hello@soninewmedia.com',
-      sitemap: 'Mapa del Sitio',
+      sitemap: 'Mapa del sitio',
       socials: 'Sociales',
       copyright: '© 2026 Soní New Media.',
       privacy: 'Política de Privacidad',

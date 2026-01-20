@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { motion, useSpring, useTransform, useMotionTemplate } from 'motion/react';
+import { motion, useSpring, useTransform, useMotionTemplate, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
 import { useRelativeMotion, useKinetic } from '../context/KineticContext.tsx';
@@ -16,6 +16,7 @@ const works: WorkItem[] = [
   },
   { id: '2', title: 'Media Sovereignty', category: 'Autonomous New Media Engine', year: '2025', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800', wide: false },
   { id: '3', title: 'Aetheric Archive', category: 'Spatial Cinematic Experience', year: '2026', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800', wide: false },
+  { id: '4', title: 'Cybernetic Fauna', category: 'Generative Creature Design', year: '2025', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=800', wide: false }
 ];
 
 const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
@@ -23,14 +24,12 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
   const { velX, velY } = useKinetic();
   const { relX, relY, isOver } = useRelativeMotion(cardRef);
   
-  // FIX: Strictly typed array destructuring (number[])
   const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
     Math.sqrt(Math.pow(vx || 0, 2) + Math.pow(vy || 0, 2))
   );
 
   const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
   
-  // FIX: Strictly typed array destructuring (number[])
   const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
   const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
 
@@ -51,7 +50,7 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] as const }}
       style={{ perspective: 1200 } as any}
       className={`relative group cursor-pointer ${item.wide ? 'col-span-1 lg:col-span-2' : 'col-span-1'}`}
     >
@@ -107,30 +106,49 @@ const WorkCard: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) 
 };
 
 const Work: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  
+  const transition = { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const };
+
   return (
     <section id="work" className="py-16 lg:py-24 bg-background overflow-hidden scroll-mt-20">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-40 border-l-[3px] border-accent pl-12">
           <div className="space-y-10 max-w-5xl">
-            <motion.span 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              className="text-label-fluid font-bold uppercase tracking-widest-3x text-secondary block"
-            >
-              {t('work.tag')}
-            </motion.span>
-            <h2 className="font-display text-h2-fluid font-medium text-text">
-              {t('work.title')}
-            </h2>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={language}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={transition}
+              >
+                <span className="text-label-fluid font-bold uppercase tracking-widest-3x text-secondary block">
+                  {t('work.tag')}
+                </span>
+                <h2 className="font-display text-h2-fluid font-medium text-text mt-4">
+                  {t('work.title')}
+                </h2>
+              </motion.div>
+            </AnimatePresence>
           </div>
           <div className="mt-16 md:mt-0 text-right">
-             <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">
-               {t('work.desc')}
-             </p>
-             <button className="text-label-fluid uppercase tracking-widest-2x font-bold text-accent border-b-2 border-accent pb-1 hover:opacity-60 transition-opacity">
-               {t('work.viewArchive')}
-             </button>
+             <AnimatePresence mode="wait">
+               <motion.div
+                 key={language}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: -10 }}
+                 transition={{ ...transition, delay: 0.1 }}
+               >
+                 <p className="text-secondary/70 max-w-xs text-body-fluid leading-relaxed mb-8 font-light">
+                   {t('work.desc')}
+                 </p>
+                 <button className="text-label-fluid uppercase tracking-widest-2x font-bold text-accent border-b-2 border-accent pb-1 hover:opacity-60 transition-opacity">
+                   {t('work.viewArchive')}
+                 </button>
+               </motion.div>
+             </AnimatePresence>
           </div>
         </div>
 

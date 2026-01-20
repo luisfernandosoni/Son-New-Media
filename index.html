@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
   <head>
@@ -7,6 +8,41 @@
     
     <link rel="preload" href="https://assets.soninewmedia.com/fonts/MaterialIconsOutlined.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="https://assets.soninewmedia.com/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<style>
+      /* Tipografía Base */
+      @font-face {
+        font-family: 'Inter';
+        src: url('https://assets.soninewmedia.com/fonts/InterVariable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('https://assets.soninewmedia.com/fonts/SpaceGrotesk[wght].woff2') format('woff2');
+        font-weight: 300 700;
+        font-display: swap;
+      }
+      
+      /* Iconografía */
+      @font-face {
+        font-family: 'Material Icons Outlined';
+        src: url('https://assets.soninewmedia.com/fonts/MaterialIconsOutlined.woff2') format('woff2');
+        font-display: block;
+      }
+      
+      .material-icons-outlined {
+        font-family: 'Material Icons Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        display: inline-block;
+        white-space: nowrap;
+        text-transform: none;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
 
 <!-- ::FALLBACK_START:: -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,15 +66,15 @@
                 display: ["Space Grotesk", "sans-serif"],
               },
               fontSize: {
-                'nano': ['clamp(0.81rem, 0.6vw, 0.88rem)', { lineHeight: '1.4', letterSpacing: '0.12em' }],
-                'body-fluid': ['clamp(1.06rem, 1.2vw, 1.2rem)', { lineHeight: '1.62', letterSpacing: '-0.01em' }],
-                'label-fluid': ['clamp(0.85rem, 0.7vw, 0.95rem)', { lineHeight: '1.2', letterSpacing: '0.2em' }],
-                'h1-fluid': ['clamp(3.5rem, 10vw, 7.5rem)', { lineHeight: '0.9', letterSpacing: '-0.05em' }],
-                'h2-fluid': ['clamp(3rem, 7.5vw, 6.5rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
-                'h3-fluid': ['clamp(1.75rem, 3.5vw, 2.5rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
-                'card-title-fluid': ['clamp(1.5rem, 2.2vw, 2.1rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
+                'nano': ['clamp(0.75rem, 0.5vw, 0.82rem)', { lineHeight: '1.4', letterSpacing: '0.15em' }],
+                'body-fluid': ['clamp(0.95rem, 1vw, 1.05rem)', { lineHeight: '1.6', letterSpacing: '-0.01em' }],
+                'label-fluid': ['clamp(0.8rem, 0.6vw, 0.88rem)', { lineHeight: '1.2', letterSpacing: '0.22em' }],
+                'h1-fluid': ['clamp(2.4rem, 5.5vw, 4.0rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
+                'h2-fluid': ['clamp(1.8rem, 4vw, 3.0rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
+                'h3-fluid': ['clamp(1.2rem, 1.8vw, 1.6rem)', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+                'card-title-fluid': ['clamp(1.3rem, 1.6vw, 1.7rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
               },
-              letterSpacing: { 'widest-2x': '0.3em', 'widest-3x': '0.45em' }
+              letterSpacing: { 'widest-2x': '0.35em', 'widest-3x': '0.5em' }
             }
           }
         };
