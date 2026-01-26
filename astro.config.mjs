@@ -13,6 +13,8 @@ export default defineConfig({
     platformProxy: {
       enabled: true,
     },
+    // AÑADE ESTA LÍNEA PARA EVITAR ERRORES DE KV:
+    runtime: { mode: 'off' }
   }),
   integrations: [
     react(),
