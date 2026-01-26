@@ -12,8 +12,8 @@ interface KineticSurfaceProps {
 }
 
 /**
- * KINETIC SURFACE V3 (2026) - Restoration of Fidelity
- * Decreased perspective to 1200 for a more striking tilt.
+ * KINETIC SURFACE V5 (2026) - Atomic Coordinate Propagation
+ * Calculates smoothed coordinates ONCE and propagates via CSS Variables.
  */
 export const KineticSurface: React.FC<KineticSurfaceProps> = ({ 
   children, 
@@ -27,20 +27,21 @@ export const KineticSurface: React.FC<KineticSurfaceProps> = ({
   const cardId = providedId || internalId;
   const { relX, relY, isOver } = useRelativeMotion(cardId, containerRef);
 
-  // High-fidelity spring with slightly more momentum
   const springConfig = useMemo(() => ({ 
     stiffness: 150, 
-    damping: 20, // More fluid momentum
-    mass: 1.2 
+    damping: 22, 
+    mass: 1.1 
   }), []);
 
-  // Fix: Explicitly casting smoothX and smoothY to MotionValue<number> to avoid inference pollution and resolve overload mismatches.
-  // We use the composition variant of useTransform to check if the cursor is over the element before applying relative coordinates.
   const smoothX = useSpring(useTransform([isOver, relX], ([over, rX]: any[]) => (over === 1 ? (rX as number) : 0.5)), springConfig) as MotionValue<number>;
   const smoothY = useSpring(useTransform([isOver, relY], ([over, rY]: any[]) => (over === 1 ? (rY as number) : 0.5)), springConfig) as MotionValue<number>;
 
   const rotateX = useTransform(smoothY, [0, 1], [strength, -strength]);
   const rotateY = useTransform(smoothX, [0, 1], [-strength, strength]);
+  
+  // Normalized variables for CSS-native Parallax (-1 to 1 range)
+  const rx = useTransform(smoothX, [0, 1], [-1, 1]);
+  const ry = useTransform(smoothY, [0, 1], [-1, 1]);
   
   const mouseXPercent = useTransform(smoothX, [0, 1], ["0%", "100%"]);
   const mouseYPercent = useTransform(smoothY, [0, 1], ["0%", "100%"]);
@@ -52,9 +53,11 @@ export const KineticSurface: React.FC<KineticSurfaceProps> = ({
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
-        perspective: 1200, // Dramatically more striking tilt
+        perspective: 1500,
         "--mx": mouseXPercent,
-        "--my": mouseYPercent
+        "--my": mouseYPercent,
+        "--rx": rx,
+        "--ry": ry
       } as any}
       className={`relative group will-change-transform ${className}`}
     >

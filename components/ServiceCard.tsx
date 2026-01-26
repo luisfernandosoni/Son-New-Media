@@ -1,96 +1,11 @@
 
 import React, { useRef } from 'react';
-import { motion, useTime, useTransform, AnimatePresence, useInView } from 'motion/react';
+import { motion, useTime, useTransform, useInView } from 'motion/react';
 import { ServiceItem } from '../types.ts';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { KineticSurface } from './kinetic/KineticSurface.tsx';
 import { KineticLayer } from './kinetic/KineticLayer.tsx';
-
-/**
- * MODULAR ATOM: CardHeader
- * Handles the icon container and the surgical numbering.
- */
-const CardHeader: React.FC<{ item?: ServiceItem; isCTA: boolean }> = ({ item, isCTA }) => (
-  <div className="flex justify-between items-start mb-16 pointer-events-none relative z-20">
-    <KineticLayer depth={120}>
-      {isCTA ? (
-        <span className="text-[10px] font-mono font-black text-black/20 tracking-widest-3x uppercase pt-2">System_Core</span>
-      ) : (
-        <div className="w-20 h-20 rounded-[32px] bg-[#1A1A1A] border border-white/10 flex items-center justify-center relative overflow-hidden group/icon shadow-inner">
-           <span className="material-icons-outlined text-3xl text-white group-hover:scale-110 transition-transform duration-700">{item?.icon}</span>
-        </div>
-      )}
-    </KineticLayer>
-    
-    <KineticLayer depth={180}>
-      <span className={`text-[12px] font-mono font-bold tracking-[0.4em] transition-colors duration-700 ${isCTA ? 'text-black/20' : 'text-white/30'}`}>
-        {isCTA ? '///' : item?.number.split('').join(' ')}
-      </span>
-    </KineticLayer>
-  </div>
-);
-
-/**
- * MODULAR ATOM: CardBody
- * Handles Title and Description with language-aware transitions.
- */
-const CardBody: React.FC<{ 
-  title: string; 
-  description: string; 
-  language: string; 
-  textVariant: any; 
-  textTransition: any;
-  subtextClass: string;
-}> = ({ title, description, language, textVariant, textTransition, subtextClass }) => (
-  <div className="flex-grow flex flex-col pointer-events-none">
-    <KineticLayer depth={100} className="mb-6">
-      <AnimatePresence mode="wait">
-        <motion.h3 key={language} {...textVariant} transition={textTransition} className="text-h3-fluid font-display font-medium leading-none tracking-tight w-full">
-          {title}
-        </motion.h3>
-      </AnimatePresence>
-    </KineticLayer>
-    
-    <KineticLayer depth={60}>
-      <AnimatePresence mode="wait">
-        <motion.p key={language} {...textVariant} transition={{ ...textTransition, delay: 0.1 }} className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light w-full ${subtextClass}`}>
-          {description}
-        </motion.p>
-      </AnimatePresence>
-    </KineticLayer>
-  </div>
-);
-
-/**
- * MODULAR ATOM: CardFooter
- * Handles the separator line and the CTA button logic.
- */
-const CardFooter: React.FC<{ 
-  isCTA: boolean; 
-  language: string; 
-  btnText?: string; 
-  textTransition: any;
-  lineClass: string;
-}> = ({ isCTA, language, btnText, textTransition, lineClass }) => (
-  <>
-    <KineticLayer depth={20} className="mt-12">
-       <div className={`w-full h-[1.5px] rounded-full mx-auto max-w-[90%] ${lineClass}`} />
-    </KineticLayer>
-
-    {isCTA && (
-      <KineticLayer depth={220} className="relative pt-10 flex justify-center w-full">
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-flex items-center gap-5 bg-black text-white px-12 py-5 rounded-full transition-all duration-700 shadow-2xl group/btn cursor-pointer pointer-events-auto">
-          <AnimatePresence mode="wait">
-            <motion.span key={language} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={textTransition} className="uppercase tracking-widest-3x text-[10px] font-black block">
-              {btnText}
-            </motion.span>
-          </AnimatePresence>
-          <span className="material-icons-outlined text-lg">bolt</span>
-        </motion.div>
-      </KineticLayer>
-    )}
-  </>
-);
+import { ServiceCardHeader, ServiceCardBody, ServiceCardFooter } from './services/CardAtoms.tsx';
 
 interface ServiceCardProps {
   item?: ServiceItem;
@@ -113,53 +28,48 @@ const ServiceCardEngine: React.FC<ServiceCardProps> = ({
     container: "text-black",
     bg: "bg-white",
     subtext: "text-black/70",
-    line: "bg-black/5",
-    shadow: "hover:shadow-[0_60px_120px_rgba(255,255,255,0.12)]"
+    line: "bg-black/10",
+    shadow: "hover:shadow-[0_80px_160px_rgba(255,255,255,0.18)]",
+    border: "border-white/20"
   } : {
     container: "text-white",
-    bg: "bg-[#080808]",
+    bg: "bg-[#0E0E0E]",
     subtext: "text-white/60",
     line: "bg-white/10",
-    shadow: "hover:shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
+    shadow: "hover:shadow-[0_50px_100px_rgba(0,0,0,0.8)]",
+    border: "border-white/15"
   };
-
-  const textVariant = {
-    initial: { opacity: 0, y: 15 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -15 }
-  };
-  
-  const textTransition = { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const };
 
   return (
     <KineticSurface 
       strength={16} 
-      shineIntensity={isCTA ? 0.05 : 0.2}
-      className={`w-full h-full p-12 lg:p-14 rounded-[52px] border border-white/5 flex flex-col ${theme.container} ${theme.shadow} transition-shadow duration-1000 overflow-hidden relative`}
+      shineIntensity={isCTA ? 0.04 : 0.22}
+      className={`w-full h-full p-12 lg:p-14 rounded-[52px] border ${theme.border} flex flex-col ${theme.container} ${theme.shadow} transition-shadow duration-1000 overflow-hidden relative shadow-2xl`}
     >
-      {/* Background with subtle breathe */}
-      <motion.div style={{ scale: idleBreathe } as any} className={`absolute inset-0 rounded-[52px] pointer-events-none ${theme.bg}`} />
+      {/* Background Plane with Physics */}
+      <motion.div 
+        style={{ scale: idleBreathe } as any} 
+        className={`absolute inset-0 rounded-[52px] pointer-events-none ${theme.bg} shadow-[inset_0_0_60px_rgba(0,0,0,0.02)]`}
+      />
 
-      <CardHeader item={item} isCTA={isCTA} />
+      <ServiceCardHeader item={item} isCTA={isCTA} />
 
-      <CardBody 
+      <ServiceCardBody 
         title={isCTA ? ctaTitle! : item!.title}
         description={isCTA ? ctaDesc! : item!.description}
         language={language}
-        textVariant={textVariant}
-        textTransition={textTransition}
+        isCTA={isCTA}
         subtextClass={theme.subtext}
       />
 
-      <CardFooter 
+      <ServiceCardFooter 
         isCTA={isCTA}
         language={language}
         btnText={ctaBtn}
-        textTransition={textTransition}
         lineClass={theme.line}
       />
 
-      {/* Global Surgical Glow (Restricted to non-CTA) */}
+      {/* Surface Specularity (Limited to Dark Cards for OLED depth) */}
       {!isCTA && (
         <KineticLayer depth={5} className="absolute inset-0 pointer-events-none">
           <motion.div 
@@ -182,7 +92,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = (props) => {
   return (
     <div
       ref={scrollRef}
-      className="relative h-[540px] group transition-opacity duration-700"
+      className="relative h-[560px] group transition-opacity duration-700"
     >
       {isInView ? (
         <ServiceCardEngine {...props} />

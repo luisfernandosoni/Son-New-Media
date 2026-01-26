@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { motion, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { KineticSurfaceContext } from './KineticSurface.tsx';
 
 interface KineticLayerProps {
@@ -10,8 +10,9 @@ interface KineticLayerProps {
 }
 
 /**
- * KINETIC LAYER V4 (2026) - Spatial Integrity
- * Balanced leverage multiplier (0.18) to prevent "leaking" outside parent bounds.
+ * KINETIC LAYER V6 (2026) - Passive Coordinate Inheritance
+ * This component no longer "listens" to motion values. 
+ * It relies on CSS variables (--rx, --ry) injected by the KineticSurface parent.
  */
 export const KineticLayer: React.FC<KineticLayerProps> = ({ children, depth, className = "" }) => {
   const context = useContext(KineticSurfaceContext);
@@ -21,19 +22,16 @@ export const KineticLayer: React.FC<KineticLayerProps> = ({ children, depth, cla
     return <>{children}</>;
   }
 
-  const { smoothX, smoothY } = context;
-
-  // Reduced leverage to keep elements inside the surgical clipping plane
-  const x = useTransform(smoothX, [0, 1], [depth * 0.18, -depth * 0.18]);
-  const y = useTransform(smoothY, [0, 1], [depth * 0.18, -depth * 0.18]);
+  // Multiplier for parallax leverage (0.2 matches original design intent)
+  const leverage = depth * 0.2;
 
   return (
     <motion.div
       style={{ 
-        x, 
-        y, 
-        translateZ: depth,
-        transformStyle: 'preserve-3d'
+        // Zero-JS Parallax: Calculated by the browser's CSS engine
+        transform: `translate3d(calc(var(--rx) * ${-leverage}px), calc(var(--ry) * ${-leverage}px), ${depth}px)`,
+        transformStyle: 'preserve-3d',
+        willChange: 'transform'
       } as any}
       className={`relative ${className}`}
     >
