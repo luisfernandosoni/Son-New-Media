@@ -3,7 +3,9 @@ import React, { useRef, useMemo, useId } from 'react';
 import { motion, useSpring, useTransform, useMotionTemplate, AnimatePresence, useInView } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { WorkItem } from '../types.ts';
-import { useRelativeMotion, useKinetic } from '../context/KineticContext.tsx';
+import { useKinetic } from '../context/KineticContext.tsx';
+import { KineticSurface } from './kinetic/KineticSurface.tsx';
+import { KineticLayer } from './kinetic/KineticLayer.tsx';
 
 const works: WorkItem[] = [
   { 
@@ -20,30 +22,6 @@ const works: WorkItem[] = [
 ];
 
 const WorkCardEngine: React.FC<{ item: WorkItem; index: number; cardId: string }> = ({ item, index, cardId }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const { velX, velY } = useKinetic();
-  const { relX, relY, isOver } = useRelativeMotion(cardId, cardRef);
-  
-  const speed = useTransform([velX, velY], ([vx, vy]: number[]) => 
-    Math.sqrt(Math.pow(vx || 0, 2) + Math.pow(vy || 0, 2))
-  );
-
-  const springConfig = useMemo(() => ({ damping: 30, stiffness: 200, mass: 0.5 }), []);
-  
-  const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
-
-  const rotateX = useSpring(useTransform(activeY, [0, 1], [10, -10]), springConfig);
-  const rotateY = useSpring(useTransform(activeX, [0, 1], [-10, 10]), springConfig);
-  
-  const imageX = useSpring(useTransform(activeX, [0, 1], [-20, 20]), springConfig);
-  const imageY = useSpring(useTransform(activeY, [0, 1], [-20, 20]), springConfig);
-
-  const shineXPercent = useTransform(activeX, [0, 1], ["0%", "100%"]);
-  
-  const smoothSpeed = useSpring(speed, { damping: 50, stiffness: 200 });
-  const shineOpacity = useTransform(smoothSpeed, [0, 2000], [0, 0.3]);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -51,36 +29,24 @@ const WorkCardEngine: React.FC<{ item: WorkItem; index: number; cardId: string }
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
       className="w-full h-full flex flex-col"
     >
-      <motion.div
-        ref={cardRef}
-        style={{ 
-          rotateX, 
-          rotateY, 
-          perspective: 1200,
-          "--sx": shineXPercent
-        } as any}
-        className="relative overflow-hidden rounded-[40px] bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5 will-change-transform group"
+      <KineticSurface
+        id={cardId}
+        strength={10}
+        shineIntensity={0.2}
+        className="overflow-hidden rounded-[40px] bg-surface border border-border shadow-2xl transition-shadow duration-500 group-hover:shadow-accent/5"
       >
-        <motion.div 
-          style={{ 
-            background: `radial-gradient(circle at var(--sx) 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
-            opacity: shineOpacity
-          } as any}
-          className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay"
-        />
-
         <div className="relative aspect-[16/9] overflow-hidden">
-          <motion.img
-            src={item.image}
-            alt={item.title}
-            style={{ x: imageX, y: imageY, scale: 1.2 } as any}
-            className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-out"
-          />
+          {/* BACKGROUND IMAGE LAYER */}
+          <KineticLayer depth={-40} className="absolute inset-0 h-full w-full">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="h-full w-full object-cover scale-[1.3] grayscale group-hover:grayscale-0 transition-all duration-1000 ease-out"
+            />
+          </KineticLayer>
           
-          <motion.div 
-            style={{ opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0) } as any}
-            className="absolute inset-0 z-10 p-12 lg:p-16 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60 transition-opacity duration-700"
-          >
+          {/* OVERLAY CONTENT LAYER */}
+          <KineticLayer depth={60} className="absolute inset-0 z-10 p-12 lg:p-16 flex flex-col justify-between pointer-events-none bg-gradient-to-b from-black/20 via-transparent to-black/60">
             <div className="flex justify-between items-start">
               <span className="text-nano font-black tracking-widest-3x text-white uppercase opacity-70">Archive_{item.year}</span>
               <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md">
@@ -88,13 +54,13 @@ const WorkCardEngine: React.FC<{ item: WorkItem; index: number; cardId: string }
               </div>
             </div>
             
-            <div className="space-y-6 translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <div className="space-y-6">
               <h3 className="text-white font-display text-h3-fluid font-medium">{item.title}</h3>
               <p className="text-white/70 text-body-fluid font-light max-w-sm">{item.category}</p>
             </div>
-          </motion.div>
+          </KineticLayer>
         </div>
-      </motion.div>
+      </KineticSurface>
 
       <div className="mt-12 flex justify-between items-end px-4">
         <div className="space-y-3">

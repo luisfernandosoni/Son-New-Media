@@ -1,9 +1,11 @@
 
 import React, { useRef, useMemo, useId } from 'react';
-import { motion, useTime, useTransform, useSpring, useMotionTemplate, AnimatePresence, useInView } from 'motion/react';
+// Added missing useTransform import from motion/react to satisfy usage on line 24
+import { motion, useTime, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { ServiceItem } from '../types.ts';
-import { useRelativeMotion } from '../context/KineticContext.tsx';
 import { useLanguage } from '../context/LanguageContext.tsx';
+import { KineticSurface } from './kinetic/KineticSurface.tsx';
+import { KineticLayer } from './kinetic/KineticLayer.tsx';
 
 interface ServiceCardProps {
   item?: ServiceItem;
@@ -14,42 +16,15 @@ interface ServiceCardProps {
   ctaBtn?: string;
 }
 
-const ServiceCardEngine: React.FC<ServiceCardProps & { isInView: boolean; cardId: string }> = ({ 
-  item, index, isCTA, ctaTitle, ctaDesc, ctaBtn, cardId
+const ServiceCardEngine: React.FC<ServiceCardProps> = ({ 
+  item, index, isCTA, ctaTitle, ctaDesc, ctaBtn
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const time = useTime();
-  const { relX, relY, isOver } = useRelativeMotion(cardId, containerRef);
   const { language } = useLanguage();
 
-  const springConfig = useMemo(() => ({ 
-    stiffness: 180, 
-    damping: 35, 
-    mass: 1.2,
-    restDelta: 0.001 
-  }), []);
-  
-  const activeX = useTransform([isOver, relX], ([over, rX]: number[]) => (over === 1 ? rX : 0.5));
-  const activeY = useTransform([isOver, relY], ([over, rY]: number[]) => (over === 1 ? rY : 0.5));
-
-  const smoothX = useSpring(activeX, springConfig);
-  const smoothY = useSpring(activeY, springConfig);
-
-  const rotateX = useTransform(smoothY, [0, 1], [10, -10]);
-  const rotateY = useTransform(smoothX, [0, 1], [-10, 10]);
-  
-  const tier1X = useTransform(smoothX, [0, 1], [32, -32]);
-  const tier1Y = useTransform(smoothY, [0, 1], [32, -32]);
-  const tier2X = useTransform(smoothX, [0, 1], [18, -18]);
-  const tier2Y = useTransform(smoothY, [0, 1], [18, -18]);
-  const tier3X = useTransform(smoothX, [0, 1], [10, -10]);
-  const tier3Y = useTransform(smoothY, [0, 1], [10, -10]);
-
+  // Fix: useTransform is now properly imported from motion/react
   const idleBreathe = useTransform(time, (t: number) => 1 + Math.sin((t + index * 500) / 4000) * 0.003);
   
-  const mouseXPercent = useTransform(smoothX, [0, 1], ["0%", "100%"]);
-  const mouseYPercent = useTransform(smoothY, [0, 1], ["0%", "100%"]);
-
   const theme = isCTA ? {
     container: "text-black",
     bg: "bg-white",
@@ -71,40 +46,15 @@ const ServiceCardEngine: React.FC<ServiceCardProps & { isInView: boolean; cardId
   const textTransition = { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const };
 
   return (
-    <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
-      style={{ 
-        rotateX,
-        rotateY,
-        scale: idleBreathe,
-        transformStyle: 'preserve-3d',
-        willChange: 'transform',
-        "--mx": mouseXPercent,
-        "--my": mouseYPercent
-      } as any}
-      className={`relative w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col ${theme.container} ${theme.shadow} transition-shadow duration-700 group`}
+    <KineticSurface 
+      strength={10} 
+      shineIntensity={isCTA ? 0.06 : 0.18}
+      className={`w-full h-full p-10 lg:p-12 rounded-[48px] border border-white/10 flex flex-col ${theme.container} ${theme.shadow} transition-shadow duration-700 overflow-visible`}
     >
-      <div className={`absolute inset-0 rounded-[48px] pointer-events-none ${theme.bg}`} />
+      <motion.div style={{ scale: idleBreathe } as any} className={`absolute inset-0 rounded-[48px] pointer-events-none ${theme.bg}`} />
 
-      <motion.div 
-        style={{ 
-          transform: 'translateZ(10px)',
-          mixBlendMode: isCTA ? 'multiply' : 'overlay',
-          opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0),
-          background: isCTA 
-            ? `radial-gradient(800px circle at var(--mx) var(--my), rgba(0,0,0,0.06), transparent 75%)`
-            : `radial-gradient(1000px circle at var(--mx) var(--my), rgba(255,255,255,0.18), transparent 60%)`
-        } as any}
-        className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 rounded-[48px]"
-      />
-
-      <motion.div 
-        style={{ x: tier1X, y: tier1Y, translateZ: 165, transformStyle: 'preserve-3d' } as any}
-        className="flex justify-between items-start relative z-10 h-20 lg:h-24 mb-4 pointer-events-none"
-      >
+      {/* ICON & NUMBER LAYER */}
+      <KineticLayer depth={165} className="flex justify-between items-start h-20 lg:h-24 mb-4 pointer-events-none">
         {isCTA ? (
           <span className="text-nano font-mono font-bold text-black/25 tracking-widest-2x uppercase pt-2">End_Sequence</span>
         ) : (
@@ -115,12 +65,10 @@ const ServiceCardEngine: React.FC<ServiceCardProps & { isInView: boolean; cardId
         <span className={`text-nano font-mono font-bold tracking-widest-2x uppercase pt-2 transition-colors duration-700 ${isCTA ? 'text-black/15' : 'text-white/40 group-hover:text-white/80'}`}>
           {isCTA ? '///' : item?.number}
         </span>
-      </motion.div>
+      </KineticLayer>
 
-      <motion.div 
-        style={{ x: tier2X, y: tier2Y, translateZ: 105, transformStyle: 'preserve-3d' } as any}
-        className={`relative z-10 flex-grow flex flex-col pointer-events-none ${isCTA ? 'items-center text-center' : ''}`}
-      >
+      {/* TITLE LAYER */}
+      <KineticLayer depth={105} className={`flex-grow flex flex-col pointer-events-none ${isCTA ? 'items-center text-center' : ''}`}>
         <div className="min-h-[2.2em] mb-4 w-full relative">
           <AnimatePresence mode="wait">
             <motion.h3 key={language} {...textVariant} transition={textTransition} className="text-card-title-fluid font-display font-medium leading-[1.1] tracking-tight w-full">
@@ -129,17 +77,18 @@ const ServiceCardEngine: React.FC<ServiceCardProps & { isInView: boolean; cardId
           </AnimatePresence>
         </div>
         
-        <motion.div style={{ x: tier3X, y: tier3Y, translateZ: 55 } as any} className="relative min-h-[3em]">
+        {/* DESC SUB-LAYER */}
+        <KineticLayer depth={55} className="relative min-h-[3em]">
           <AnimatePresence mode="wait">
             <motion.p key={language} {...textVariant} transition={{ ...textTransition, delay: 0.1 }} className={`text-body-fluid leading-relaxed transition-colors duration-1000 max-w-full font-light w-full ${theme.subtext} ${isCTA ? 'px-4 opacity-80' : 'group-hover:text-white/90'}`}>
               {isCTA ? ctaDesc : item?.description}
             </motion.p>
           </AnimatePresence>
-        </motion.div>
-      </motion.div>
+        </KineticLayer>
+      </KineticLayer>
 
       {isCTA && (
-        <motion.div style={{ translateZ: 225, x: tier1X, y: tier1Y } as any} className="relative z-10 pb-2 flex justify-center w-full">
+        <KineticLayer depth={225} className="relative pb-2 flex justify-center w-full">
           <motion.div whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }} className="inline-flex items-center gap-4 bg-black text-white px-10 py-5 rounded-full transition-all duration-700 shadow-xl group/btn cursor-pointer pointer-events-auto">
             <AnimatePresence mode="wait">
               <motion.span key={language} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={textTransition} className="uppercase tracking-widest-2x text-label-fluid font-bold block">
@@ -148,37 +97,36 @@ const ServiceCardEngine: React.FC<ServiceCardProps & { isInView: boolean; cardId
             </AnimatePresence>
             <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }} className="material-icons-outlined text-lg">bolt</motion.span>
           </motion.div>
-        </motion.div>
+        </KineticLayer>
       )}
 
+      {/* BORDER GLOW SUB-LAYER */}
       {!isCTA && (
-        <motion.div 
-          className="absolute inset-0 border-[2px] border-white/30 rounded-[48px] pointer-events-none"
-          style={{
-            transform: 'translateZ(1px)',
-            opacity: useTransform(isOver, (over: number) => over === 1 ? 1 : 0),
-            maskImage: `radial-gradient(500px circle at var(--mx) var(--my), black, transparent 90%)`,
-            WebkitMaskImage: `radial-gradient(500px circle at var(--mx) var(--my), black, transparent 90%)`
-          } as any}
-        />
+        <KineticLayer depth={1} className="absolute inset-0 pointer-events-none">
+          <motion.div 
+            className="absolute inset-0 border-[2px] border-white/30 rounded-[48px]"
+            style={{
+              maskImage: `radial-gradient(500px circle at var(--mx) var(--my), black, transparent 90%)`,
+              WebkitMaskImage: `radial-gradient(500px circle at var(--mx) var(--my), black, transparent 90%)`
+            } as any}
+          />
+        </KineticLayer>
       )}
-    </motion.div>
+    </KineticSurface>
   );
 };
 
 export const ServiceCard: React.FC<ServiceCardProps> = (props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const cardId = useId();
   const isInView = useInView(scrollRef, { margin: "200px", once: false });
 
   return (
     <div
       ref={scrollRef}
       className="relative h-[460px] group transition-opacity duration-700"
-      style={{ perspective: 2000 }}
     >
       {isInView ? (
-        <ServiceCardEngine {...props} cardId={cardId} isInView={isInView} />
+        <ServiceCardEngine {...props} />
       ) : (
         <div className="w-full h-full p-10 rounded-[48px] border border-white/5 bg-white/[0.02] flex flex-col opacity-20" />
       )}
