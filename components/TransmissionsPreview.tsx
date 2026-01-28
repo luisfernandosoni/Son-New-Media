@@ -117,8 +117,6 @@ export const TransmissionsPreview: React.FC = () => {
                     src={transmission.heroImage.url} 
                     alt={transmission.heroImage.alt_text || transmission.title}
                     loading="lazy"
-                    width={transmission.heroImage.width || 640}
-                    height={transmission.heroImage.height || 360}
                   />
                 </div>
               )}

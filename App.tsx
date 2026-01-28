@@ -6,16 +6,15 @@ import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import { CustomCursor } from './components/CustomCursor.tsx';
 
-
 // #MCRD OPTIMIZATION: Code Splitting Táctico
 // Diferimos la carga de componentes pesados que no son visibles al inicio.
 // Esto reduce drásticamente el JS inicial necesario para arrancar.
 const Services = lazy(() => import('./components/Services.tsx'));
 const Work = lazy(() => import('./components/Work.tsx'));
 const About = lazy(() => import('./components/About.tsx'));
+const TransmissionsPreview = lazy(() => import('./components/TransmissionsPreview.tsx'));
 const DesignPhilosophy = lazy(() => import('./components/DesignPhilosophy.tsx'));
 const Footer = lazy(() => import('./components/Footer.tsx'));
-const TransmissionsPreview = lazy(() => import('./components/TransmissionsPreview.tsx'))
 
 // Componente de carga ultraligero (invisible o spinner minimalista)
 const SectionLoader = () => <div className="w-full h-20 bg-transparent" />;
@@ -37,10 +36,6 @@ const App: React.FC = () => {
             <Suspense fallback={<SectionLoader />}>
               <Services />
             </Suspense>
-
-            <Suspense fallback={<SectionLoader />}>
-              <TransmissionsPreview />
-            </Suspense>
             
             <Suspense fallback={<SectionLoader />}>
               <Work />
@@ -48,6 +43,11 @@ const App: React.FC = () => {
             
             <Suspense fallback={<SectionLoader />}>
               <About />
+            </Suspense>
+
+            {/* Transmissions Preview - CMS Integration */}
+            <Suspense fallback={<SectionLoader />}>
+              <TransmissionsPreview />
             </Suspense>
             
             <Suspense fallback={<SectionLoader />}>

@@ -1,3 +1,8 @@
+/**
+ * Transmissions Types
+ * Types for CMS integration with Payload CMS
+ */
+
 export interface TransmissionPreview {
   id: number
   title: string
@@ -9,6 +14,7 @@ export interface TransmissionPreview {
     alt_text?: string
   } | null
   category: {
+    id: number
     title: string
     slug: string
   } | null

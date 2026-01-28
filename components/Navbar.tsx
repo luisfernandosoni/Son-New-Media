@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { NavBranding, NavLinkItem, NavLanguageSwitcher, NavCTA } from './navbar/Atoms.tsx';
+import { Magnetic } from './Magnetic.tsx';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,12 +18,7 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-const navItems = [
-  { label: 'Services', href: '#services' },
-  { label: 'Work', href: '#work' },
-  { label: 'Transmissions', href: '/transmissions', external: true }, // ← ADD THIS
-  { label: 'About', href: '#about' },
-]
+  const navItems = ['services', 'work', 'about'];
 
   return (
     <motion.nav
@@ -42,25 +38,24 @@ const navItems = [
         <div className="flex items-center space-x-12 lg:space-x-16">
           {/* Navigation Matrix */}
           <div className="hidden lg:flex items-center space-x-4">
-          {navItems.map((item) => (
-          item.external ? (
-          <a 
-           key={item.label}
-           href={item.href}
-           className="nav-link"
-          >
-          {item.label}
-          </a>
-          ) : (
-          <button 
-           key={item.label}
-          onClick={() => scrollTo(item.href)}
-          className="nav-link"
-           >
-          {item.label}
-           </button>
-            )
-          ))}
+            {navItems.map((item) => (
+              <NavLinkItem 
+                key={item} 
+                item={item} 
+                label={t(`nav.${item}`)} 
+                language={language} 
+              />
+            ))}
+            {/* Transmissions - External page link */}
+            <Magnetic strength={0.25} radius={80}>
+              <a
+                href="/transmissions"
+                className="px-6 py-2 text-secondary hover:text-text transition-colors relative group uppercase text-nano font-bold tracking-widest-3x block"
+              >
+                <span className="block">Transmissions</span>
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-1/2" />
+              </a>
+            </Magnetic>
           </div>
           
           {/* System Actions */}
