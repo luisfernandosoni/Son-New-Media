@@ -10,13 +10,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "motion": "^12.0.0", 
+    "lenis": "^1.1.18",
+    "motion": "^12.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^6.22.3",
-    "lenis": "^1.1.18"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260128.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.2.1",
