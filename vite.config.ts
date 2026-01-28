@@ -51,6 +51,30 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true
-  }
+    host: true,
+    // Proxy para integración con Payload CMS
+    // En desarrollo, redirige las rutas del CMS al servidor de producción
+    proxy: {
+      // API calls al CMS (latest transmissions, search, etc)
+      '/api': {
+        target: 'https://soninewmedia.com',
+        changeOrigin: true,
+        secure: true,
+        // Reescribe cookies para desarrollo local
+        cookieDomainRewrite: 'localhost',
+      },
+      // Páginas de transmissions (SSR desde Payload)
+      '/transmissions': {
+        target: 'https://soninewmedia.com',
+        changeOrigin: true,
+        secure: true,
+      },
+      // Admin panel del CMS
+      '/admin': {
+        target: 'https://soninewmedia.com',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 });
