@@ -8,8 +8,8 @@ export const onRequest: PagesFunction = async (context) => {
     const { request } = context;
     const url = new URL(request.url);
 
-    // Target: https://soninewmedia.com/admin/...
-    const targetUrl = new URL(url.pathname, 'https://soninewmedia.com');
+    // Target: https://soni-cms.soniglf.workers.dev/admin/...
+    const targetUrl = new URL(url.pathname, 'https://soni-cms.soniglf.workers.dev');
     targetUrl.search = url.search;
 
     const newRequest = new Request(targetUrl.toString(), {
