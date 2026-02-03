@@ -31,6 +31,15 @@ export const Transmissions: React.FC = () => {
         fetchTransmissions();
     }, []);
 
+    // SEO: Set document title for discoverability
+    useEffect(() => {
+        document.title = 'Transmissions — Soni New Media';
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', 'Explore the latest transmissions, insights, and creative signals from Soni New Media.');
+        }
+    }, []);
+
     return (
         <div className="min-h-screen pt-32 pb-20 px-6 lg:px-20">
             <div className="max-w-8xl mx-auto">

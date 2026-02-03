@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext.tsx';
 import { NavBranding, NavLinkItem, NavLanguageSwitcher, NavCTA } from './navbar/Atoms.tsx';
@@ -50,13 +51,13 @@ const Navbar: React.FC = () => {
             ))}
             {/* Transmissions link */}
             <Magnetic strength={0.25} radius={80}>
-              <a
-                href="/transmissions"
+              <Link
+                to="/transmissions"
                 className="px-4 xl:px-6 py-2 text-secondary hover:text-text transition-colors relative group uppercase text-nano font-bold tracking-widest-3x block whitespace-nowrap"
               >
                 <span className="block">Transmissions</span>
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-1/2" />
-              </a>
+              </Link>
             </Magnetic>
           </div>
           

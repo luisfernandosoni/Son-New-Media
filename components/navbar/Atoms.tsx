@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Magnetic } from '../Magnetic.tsx';
 import { Logo } from '../Logo.tsx';
@@ -12,9 +13,9 @@ const transition = {
 
 export const NavBranding: React.FC = React.memo(() => (
   <Magnetic strength={0.15} radius={100}>
-    <a href="#" className="flex items-center group cursor-pointer relative">
+    <Link to="/" className="flex items-center group cursor-pointer relative">
       <Logo size={40} />
-    </a>
+    </Link>
   </Magnetic>
 ));
 
